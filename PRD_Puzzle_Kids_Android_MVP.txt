@@ -1,0 +1,192 @@
+PRD – Puzzle Kids 🧩
+
+Juego de Rompecabezas para Android (+3 años)
+
+Versión: 1.0 (MVP)
+
+1. Objetivo
+
+Crear un juego de rompecabezas extremadamente simple para Android,
+dirigido a niños de 3 años o más, completamente offline, sin publicidad
+ni compras integradas. Debe iniciar en menos de 3 segundos y ser
+intuitivo.
+
+2. Público objetivo
+
+-   Niños de 3 a 5 años.
+-   Padres que instalan la aplicación.
+
+3. Tecnología
+
+-   Flutter
+-   Material 3
+-   Provider
+-   audioplayers
+-   shared_preferences
+-   flutter_animate
+
+Sin Firebase, sin backend, todo local.
+
+Package: com.puzzlekids.app
+
+4. Flujo
+
+Splash → Menú → Categorías → Selección de Puzzle → Juego → Celebración →
+Siguiente Puzzle
+
+5. Pantallas
+
+Splash
+
+-   Logo
+-   Nombre Puzzle Kids
+-   Animación de 2 segundos
+
+Menú
+
+-   ▶ Jugar
+-   ⚙ Configuración
+-   ⭐ Mis Estrellas
+
+Categorías
+
+-   Animales
+-   Vehículos
+-   Frutas
+-   Granja
+-   Dinosaurios
+-   Espacio
+
+Selección
+
+Miniaturas grandes y niveles: ⭐ ⭐⭐ ⭐⭐⭐
+
+Juego
+
+-   Imagen de referencia tenue
+-   Área de armado
+-   Piezas mezcladas
+-   Reiniciar
+-   Sonido
+-   Volver
+
+6. Mecánica
+
+-   Arrastrar y soltar.
+-   Si la pieza está cerca, se acomoda automáticamente.
+-   Sonido al acertar.
+-   Animación brillante.
+-   Si falla vuelve suavemente.
+-   Nunca castigar al niño.
+
+7. Dificultades
+
+Nivel 1: 2 piezas Nivel 2: 4 piezas Nivel 3: 6 piezas Nivel 4: 9 piezas
+Nivel 5: 12 piezas
+
+8. Sonidos
+
+-   pop.wav
+-   ding.wav
+-   aplausos.wav
+-   Música suave configurable.
+
+9. Animaciones
+
+-   Bounce
+-   Fade
+-   Glow
+-   Confetti
+
+Duración aproximada: 300 ms.
+
+10. Recompensas
+
+-   1 estrella por puzzle.
+-   Trofeo al completar una categoría.
+
+11. Persistencia
+
+SharedPreferences.
+
+Guardar: - estrellas - puzzles completados - categorías
+
+12. Assets
+
+assets/ images/ animals/ vehicles/ farm/ fruit/ dino/ space/ sounds/ ui/
+fonts/
+
+13. Imágenes
+
+PNG 1024x1024
+
+14. Sistema de piezas
+
+Generar automáticamente: 2x2 3x3 No usar piezas irregulares para el MVP.
+
+15. UX
+
+-   Botones grandes.
+-   Mucho espacio.
+-   Íconos enormes.
+-   Sin textos complejos.
+
+16. Configuración
+
+-   Música
+-   Sonidos
+-   Vibración
+
+17. Accesibilidad
+
+-   Alto contraste.
+-   Fuentes grandes.
+-   Horizontal.
+-   Tablets.
+
+18. Rendimiento
+
+-   Inicio <3 segundos.
+-   60 FPS.
+-   APK <40 MB.
+-   RAM <150 MB.
+-   Sin Internet.
+
+19. Arquitectura
+
+lib/ - main.dart - screens/ - widgets/ - models/ - providers/ -
+services/ - utils/
+
+20. Servicios
+
+PuzzleService RewardService StorageService AudioService
+
+21. Modelo
+
+Puzzle - id - nombre - categoria - imagen - filas - columnas - nivel
+
+22. Roadmap
+
+MVP - Splash - Menú - Categorías - 20 puzzles - Sonidos - APK
+
+v1.1 - 50 puzzles - Nuevos animales - Nuevos fondos
+
+v1.2 - Cronómetro opcional - Logros - Modo libre
+
+v2.0 - Crear puzzles desde imágenes propias. - Editor de puzzles.
+
+23. Criterios de aceptación
+
+-   Instalable como APK.
+-   Funciona offline.
+-   Máximo 3 toques para comenzar.
+-   Guarda progreso.
+-   Sin anuncios.
+-   Fluidez de 60 FPS.
+
+24. Recomendaciones
+
+-   Narrador infantil.
+-   Stickers desbloqueables.
+-   Múltiples perfiles.
+-   Arquitectura preparada para Google Play.
