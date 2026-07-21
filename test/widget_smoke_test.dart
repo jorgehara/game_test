@@ -14,9 +14,7 @@ void main() {
     expect(app.theme?.useMaterial3, isTrue);
   });
 
-  testWidgets('placeholder flow reaches celebration and next puzzle', (
-    tester,
-  ) async {
+  testWidgets('main flow reaches responsive puzzle game', (tester) async {
     await tester.pumpWidget(const PuzzleKidsApp());
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Empezar'));
@@ -33,15 +31,9 @@ void main() {
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Jugar'));
     await tester.pumpAndSettle();
-    expect(find.text('Juego'), findsOneWidget);
-    expect(find.textContaining('pieza'), findsNothing);
-
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Celebrar'));
-    await tester.pumpAndSettle();
-    expect(find.text('¡Bien hecho!'), findsOneWidget);
-
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Siguiente puzzle'));
-    await tester.pumpAndSettle();
-    expect(find.text('Selección'), findsOneWidget);
+    expect(find.byKey(const Key('puzzle-game-screen')), findsOneWidget);
+    expect(find.byKey(const Key('puzzle-board')), findsOneWidget);
+    expect(find.byKey(const Key('puzzle-tray')), findsOneWidget);
+    expect(find.textContaining('Progreso 0/'), findsOneWidget);
   });
 }
