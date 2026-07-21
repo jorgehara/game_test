@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/puzzle_piece.dart';
+import '../theme/pk_tokens.dart';
 
 class PuzzlePieceTile extends StatelessWidget {
   const PuzzlePieceTile({
@@ -17,6 +18,7 @@ class PuzzlePieceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final number = piece.correctIndex + 1;
+    final colors = context.pkColors;
 
     return Semantics(
       label: 'Pieza $number de $totalPieces',
@@ -25,42 +27,27 @@ class PuzzlePieceTile extends StatelessWidget {
         height: expand ? double.infinity : 86,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: _pieceColor(piece.correctIndex),
-          border: Border.all(color: Colors.black, width: 3),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
+          color: colors
+              .piecePalette[piece.correctIndex % colors.piecePalette.length],
+          border: Border.all(color: colors.onSurface, width: 3),
+          borderRadius: BorderRadius.circular(context.pkRadius.button),
+          boxShadow: [
             BoxShadow(
-              color: Color(0x33000000),
+              color: colors.outline.withValues(alpha: 0.18),
               blurRadius: 8,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Text(
           '$number',
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: colors.onSurface,
             fontSize: 30,
             fontWeight: FontWeight.w900,
           ),
         ),
       ),
     );
-  }
-
-  Color _pieceColor(int index) {
-    const colors = [
-      Color(0xFFFFC857),
-      Color(0xFF8BE28B),
-      Color(0xFF78D6FF),
-      Color(0xFFFF8FB3),
-      Color(0xFFD6B4FF),
-      Color(0xFFFFA45B),
-      Color(0xFFA6F0E4),
-      Color(0xFFFFF27A),
-      Color(0xFFB8E986),
-    ];
-
-    return colors[index % colors.length];
   }
 }

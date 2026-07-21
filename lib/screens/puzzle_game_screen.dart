@@ -4,6 +4,10 @@ import 'package:provider/provider.dart';
 import '../models/puzzle_piece.dart';
 import '../providers/puzzle_game_provider.dart';
 import '../routes/app_routes.dart';
+import '../theme/pk_tokens.dart';
+import '../widgets/pk_button.dart';
+import '../widgets/pk_progress.dart';
+import '../widgets/pk_scaffold.dart';
 import '../widgets/puzzle_board.dart';
 import '../widgets/puzzle_piece_tile.dart';
 
@@ -33,20 +37,17 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Consumer<PuzzleGameProvider>(
-          builder: (context, provider, _) {
-            if (provider.status == PuzzleGameStatus.unavailable ||
-                provider.currentPuzzle == null) {
-              return _UnavailableGame(
-                onBack: () => Navigator.maybePop(context),
-              );
-            }
+    return PkScaffold(
+      title: 'Juego',
+      child: Consumer<PuzzleGameProvider>(
+        builder: (context, provider, _) {
+          if (provider.status == PuzzleGameStatus.unavailable ||
+              provider.currentPuzzle == null) {
+            return _UnavailableGame(onBack: () => Navigator.maybePop(context));
+          }
 
-            return _ReadyGame(provider: provider);
-          },
-        ),
+          return _ReadyGame(provider: provider);
+        },
       ),
     );
   }
@@ -79,13 +80,14 @@ class _ReadyGameState extends State<_ReadyGame> {
 
     final puzzle = provider.currentPuzzle!;
     final total = provider.pieces.length;
+    final spacing = context.pkSpacing;
 
     return Stack(
       key: _stackKey,
       children: [
         Padding(
           key: const Key('puzzle-game-screen'),
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(spacing.lg),
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 780;
@@ -106,26 +108,26 @@ class _ReadyGameState extends State<_ReadyGame> {
               return Column(
                 children: [
                   _GameHeader(provider: provider, onReset: _reset),
-                  const SizedBox(height: 16),
+                  SizedBox(height: spacing.md),
                   Expanded(
                     child: isWide
                         ? Row(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Expanded(flex: 3, child: board),
-                              const SizedBox(width: 20),
+                              SizedBox(width: spacing.lg),
                               SizedBox(width: 280, child: tray),
                             ],
                           )
                         : Column(
                             children: [
                               Expanded(child: board),
-                              const SizedBox(height: 16),
+                              SizedBox(height: spacing.md),
                               SizedBox(height: 148, child: tray),
                             ],
                           ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: spacing.sm),
                   Text(
                     provider.isCompleted
                         ? '¡Puzzle completo!'
@@ -137,6 +139,11 @@ class _ReadyGameState extends State<_ReadyGame> {
                     key: const Key('puzzle-progress'),
                     label: 'Progreso ${provider.progressCount} de $total',
                     child: Text('Progreso ${provider.progressCount}/$total'),
+                  ),
+                  SizedBox(height: spacing.sm),
+                  PkProgress(
+                    value: total == 0 ? 0 : provider.progressCount / total,
+                    label: 'Progreso del puzzle',
                   ),
                 ],
               );
@@ -150,7 +157,9 @@ class _ReadyGameState extends State<_ReadyGame> {
             top: _drag!.topLeft.dy,
             width: _drag!.size.width,
             height: _drag!.size.height,
-            duration: _drag!.isReturning ? _returnDuration : Duration.zero,
+            duration: _drag!.isReturning
+                ? context.pkMotion.resolve(context, _returnDuration)
+                : Duration.zero,
             curve: Curves.easeOutCubic,
             onEnd: _finishReturn,
             child: IgnorePointer(
@@ -302,8 +311,8 @@ class _GameHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 12,
-      runSpacing: 12,
+      spacing: context.pkSpacing.sm,
+      runSpacing: context.pkSpacing.sm,
       crossAxisAlignment: WrapCrossAlignment.center,
       alignment: WrapAlignment.spaceBetween,
       children: [
@@ -351,20 +360,22 @@ class _PuzzleTray extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.pkColors;
+    final spacing = context.pkSpacing;
     return Semantics(
       label: 'Bandeja de piezas',
       child: DecoratedBox(
         key: const Key('puzzle-tray'),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF1B8),
-          border: Border.all(color: const Color(0xFF6C3F00), width: 3),
-          borderRadius: BorderRadius.circular(28),
+          color: colors.surfaceAlt,
+          border: Border.all(color: colors.outline, width: 3),
+          borderRadius: BorderRadius.circular(context.pkRadius.card),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(spacing.sm),
           child: Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: spacing.sm,
+            runSpacing: spacing.sm,
             alignment: WrapAlignment.center,
             children: [
               for (final piece in provider.piecesInTray)
@@ -439,16 +450,7 @@ class _LargeControl extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 28),
-        label: Text(label),
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size(148, 56),
-          backgroundColor: const Color(0xFF3B2F8F),
-          foregroundColor: Colors.white,
-        ),
-      ),
+      child: PkButton(label: label, icon: icon, onPressed: onPressed),
     );
   }
 }
@@ -460,10 +462,11 @@ class _UnavailableGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = context.pkSpacing;
     return Center(
       key: const Key('puzzle-unavailable-state'),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(spacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -471,12 +474,12 @@ class _UnavailableGame extends StatelessWidget {
               'Puzzle no disponible',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: spacing.md),
             const Text(
               'Este puzzle todavía no está listo. Probemos con otro.',
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: spacing.lg),
             _LargeControl(
               key: const Key('puzzle-back-button'),
               label: 'Volver',

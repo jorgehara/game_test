@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/pk_tokens.dart';
+import '../widgets/pk_card.dart';
+import '../widgets/pk_scaffold.dart';
 import '../widgets/primary_action_button.dart';
 
 class PlaceholderScreenShell extends StatelessWidget {
@@ -18,15 +21,19 @@ class PlaceholderScreenShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
+    final spacing = context.pkSpacing;
+    return PkScaffold(
+      title: title,
+      showNavigation: title != 'Puzzle Kids',
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(spacing.lg),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: PkCard(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     title,
@@ -34,13 +41,13 @@ class PlaceholderScreenShell extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: spacing.lg),
                   Text(
                     message,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  const SizedBox(height: 36),
+                  SizedBox(height: spacing.xl),
                   PrimaryActionButton(label: buttonLabel, onPressed: onPressed),
                 ],
               ),

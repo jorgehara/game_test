@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'pk_button.dart';
+
 class PrimaryActionButton extends StatelessWidget {
   const PrimaryActionButton({
     required this.label,
@@ -12,10 +14,6 @@ class PrimaryActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: ElevatedButton(onPressed: onPressed, child: Text(label)),
-    );
+    return PkButton(label: label, onPressed: onPressed);
   }
 }

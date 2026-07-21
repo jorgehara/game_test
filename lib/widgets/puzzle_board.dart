@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/grid_position.dart';
 import '../models/puzzle.dart';
 import '../models/puzzle_piece.dart';
+import '../theme/pk_tokens.dart';
 import 'puzzle_piece_tile.dart';
 
 class PuzzleBoard extends StatelessWidget {
@@ -23,6 +24,8 @@ class PuzzleBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     final grid = puzzle.grid;
     final aspectRatio = grid.columns / grid.rows;
+    final colors = context.pkColors;
+    final radius = context.pkRadius;
 
     return Semantics(
       label: 'Tablero del puzzle ${puzzle.name}',
@@ -50,15 +53,12 @@ class PuzzleBoard extends StatelessWidget {
                 key: const Key('puzzle-board'),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF7FF),
-                    border: Border.all(
-                      color: const Color(0xFF12355B),
-                      width: 4,
-                    ),
-                    borderRadius: BorderRadius.circular(32),
+                    color: colors.surface,
+                    border: Border.all(color: colors.outline, width: 4),
+                    borderRadius: BorderRadius.circular(radius.board),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(radius.board - 4),
                     child: Stack(
                       children: [
                         for (var row = 0; row < grid.rows; row += 1)
@@ -125,6 +125,7 @@ class _Slot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.pkColors;
     return Positioned(
       left: left,
       top: top,
@@ -137,14 +138,14 @@ class _Slot extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: index.isEven
-                ? const Color(0x66FFFFFF)
-                : const Color(0x66BDEBFF),
-            border: Border.all(color: const Color(0xFF12355B), width: 2),
+                ? colors.surfaceAlt.withValues(alpha: 0.45)
+                : colors.secondary.withValues(alpha: 0.18),
+            border: Border.all(color: colors.outline, width: 2),
           ),
           child: Text(
             '${index + 1}',
-            style: const TextStyle(
-              color: Color(0x9912355B),
+            style: TextStyle(
+              color: colors.outline.withValues(alpha: 0.72),
               fontSize: 34,
               fontWeight: FontWeight.w900,
             ),
