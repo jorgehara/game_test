@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/app_shell_provider.dart';
+import 'providers/puzzle_game_provider.dart';
 import 'routes/app_routes.dart';
 
 void main() {
@@ -16,6 +17,9 @@ class PuzzleKidsApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AppShellProvider>(create: (_) => const AppShellProvider()),
+        ChangeNotifierProvider<PuzzleGameProvider>(
+          create: (_) => PuzzleGameProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Puzzle Kids',
