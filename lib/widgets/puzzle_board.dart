@@ -11,11 +11,13 @@ class PuzzleBoard extends StatelessWidget {
     required this.puzzle,
     required this.pieces,
     required this.placedPositions,
+    this.boardMeasurementKey,
   });
 
   final Puzzle puzzle;
   final List<PuzzlePiece> pieces;
   final Map<String, GridPosition> placedPositions;
+  final GlobalKey? boardMeasurementKey;
 
   @override
   Widget build(BuildContext context) {
@@ -41,45 +43,56 @@ class PuzzleBoard extends StatelessWidget {
 
           return Center(
             child: SizedBox(
-              key: const Key('puzzle-board'),
+              key: boardMeasurementKey,
               width: boardWidth,
               height: boardHeight,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAF7FF),
-                  border: Border.all(color: const Color(0xFF12355B), width: 4),
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(28),
-                  child: Stack(
-                    children: [
-                      for (var row = 0; row < grid.rows; row += 1)
-                        for (var column = 0; column < grid.columns; column += 1)
-                          _Slot(
-                            row: row,
-                            column: column,
-                            index: row * grid.columns + column,
-                            left: column * cellWidth,
-                            top: row * cellHeight,
-                            width: cellWidth,
-                            height: cellHeight,
-                          ),
-                      for (final piece in pieces)
-                        if (placedPositions.containsKey(piece.id))
-                          Positioned(
-                            key: Key('puzzle-placed-piece-${piece.id}'),
-                            left: piece.correctPosition.column * cellWidth + 6,
-                            top: piece.correctPosition.row * cellHeight + 6,
-                            width: cellWidth - 12,
-                            height: cellHeight - 12,
-                            child: PuzzlePieceTile(
-                              piece: piece,
-                              totalPieces: pieces.length,
-                              expand: true,
+              child: SizedBox.expand(
+                key: const Key('puzzle-board'),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF7FF),
+                    border: Border.all(
+                      color: const Color(0xFF12355B),
+                      width: 4,
+                    ),
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: Stack(
+                      children: [
+                        for (var row = 0; row < grid.rows; row += 1)
+                          for (
+                            var column = 0;
+                            column < grid.columns;
+                            column += 1
+                          )
+                            _Slot(
+                              row: row,
+                              column: column,
+                              index: row * grid.columns + column,
+                              left: column * cellWidth,
+                              top: row * cellHeight,
+                              width: cellWidth,
+                              height: cellHeight,
                             ),
-                          ),
-                    ],
+                        for (final piece in pieces)
+                          if (placedPositions.containsKey(piece.id))
+                            Positioned(
+                              key: Key('puzzle-placed-piece-${piece.id}'),
+                              left:
+                                  piece.correctPosition.column * cellWidth + 6,
+                              top: piece.correctPosition.row * cellHeight + 6,
+                              width: cellWidth - 12,
+                              height: cellHeight - 12,
+                              child: PuzzlePieceTile(
+                                piece: piece,
+                                totalPieces: pieces.length,
+                                expand: true,
+                              ),
+                            ),
+                      ],
+                    ),
                   ),
                 ),
               ),
