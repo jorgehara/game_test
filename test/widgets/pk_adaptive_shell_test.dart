@@ -4,14 +4,20 @@ import 'package:puzzle_kids/main.dart';
 import 'package:puzzle_kids/routes/app_routes.dart';
 import 'package:puzzle_kids/theme/pk_theme.dart';
 import 'package:puzzle_kids/widgets/pk_scaffold.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('phone keeps simple flow without primary sidebar', (
     tester,
   ) async {
     _setLogicalSize(tester, const Size(390, 800));
 
     await tester.pumpWidget(const PuzzleKidsApp());
+    await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('pk-adaptive-sidebar')), findsNothing);
     expect(find.widgetWithText(ElevatedButton, 'Empezar'), findsOneWidget);
@@ -23,6 +29,7 @@ void main() {
     _setLogicalSize(tester, const Size(960, 640));
 
     await tester.pumpWidget(const PuzzleKidsApp());
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ElevatedButton, 'Empezar'));
     await tester.pumpAndSettle();
 
@@ -55,6 +62,7 @@ void main() {
       _setLogicalSize(tester, const Size(390, 800));
 
       await tester.pumpWidget(const PuzzleKidsApp());
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(ElevatedButton, 'Empezar'));
       await tester.pumpAndSettle();
 

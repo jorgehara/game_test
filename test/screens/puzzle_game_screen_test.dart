@@ -5,12 +5,19 @@ import 'package:puzzle_kids/models/grid_spec.dart';
 import 'package:puzzle_kids/models/puzzle.dart';
 import 'package:puzzle_kids/models/puzzle_category.dart';
 import 'package:puzzle_kids/models/puzzle_difficulty.dart';
+import 'package:puzzle_kids/providers/onboarding_provider.dart';
+import 'package:puzzle_kids/providers/progress_provider.dart';
 import 'package:puzzle_kids/providers/puzzle_game_provider.dart';
 import 'package:puzzle_kids/routes/app_routes.dart';
-import 'package:puzzle_kids/screens/celebration_screen.dart';
 import 'package:puzzle_kids/screens/puzzle_game_screen.dart';
+import 'package:puzzle_kids/widgets/completion_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('renders responsive board, tray, controls, and stable keys', (
     tester,
   ) async {
@@ -181,13 +188,16 @@ void main() {
     expect(find.text('Progreso 0/4'), findsOneWidget);
   });
 
-  testWidgets('completion navigates to celebration once', (tester) async {
+  testWidgets('completion shows accessible dialog once and stores progress', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final observer = _CountingNavigatorObserver();
+    final prefs = await SharedPreferences.getInstance();
+    final progress = ProgressProvider(prefs: prefs);
     final provider = _provider()..start(puzzleId: 'lion');
 
-    await _pumpGame(tester, provider: provider, observer: observer);
+    await _pumpGame(tester, provider: provider, progress: progress);
 
     for (final pieceId in ['lion_0_0', 'lion_0_1', 'lion_1_0', 'lion_1_1']) {
       final index = int.parse(pieceId.substring(pieceId.length - 1));
@@ -201,28 +211,138 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(provider.isCompleted, isTrue);
-    expect(find.text('¡Bien hecho!'), findsOneWidget);
-    expect(observer.celebrationPushes, 1);
+    expect(find.byKey(const Key('completion-dialog')), findsOneWidget);
+    expect(find.text('¡Lo lograste!'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+    expect(progress.isCompleted('lion'), isTrue);
 
     expect(provider.placePiece('lion_0_0'), isFalse);
     await tester.pumpAndSettle();
 
-    expect(observer.celebrationPushes, 1);
+    expect(find.byKey(const Key('completion-dialog')), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('completion-dialog')), findsNothing);
+  });
+
+  testWidgets('completion dialog uses reduced motion fallback', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: Builder(
+            builder: (context) => const Scaffold(
+              body: Center(
+                child: CompletionDialog(
+                  puzzleName: 'Lion',
+                  onContinue: _noop,
+                  onReplay: _noop,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('completion-static-success')), findsOneWidget);
+    expect(find.byKey(const Key('completion-confetti')), findsNothing);
+  });
+
+  testWidgets('drag onboarding appears once with skip action', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboarding = OnboardingProvider(prefs: prefs);
+
+    await _pumpGame(tester, onboarding: onboarding);
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsOneWidget);
+    expect(find.text('Arrastrá y soltá'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(TextButton, 'Omitir'));
+    await tester.pumpAndSettle();
+
+    expect(onboarding.shouldShowDragOnboarding, isFalse);
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsNothing);
+  });
+
+  testWidgets('drag onboarding understood action persists and hides dialog', (
+    tester,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboarding = OnboardingProvider(prefs: prefs);
+
+    await _pumpGame(tester, onboarding: onboarding);
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsOneWidget);
+    expect(find.text('Entendido'), findsOneWidget);
+
+    await tester.tap(find.text('Entendido'));
+    await tester.pumpAndSettle();
+
+    expect(onboarding.shouldShowDragOnboarding, isFalse);
+    expect(prefs.getBool('pk.dragOnboardingSeen'), isTrue);
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsNothing);
+
+    await tester.pump();
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsNothing);
+  });
+
+  testWidgets('drag onboarding back dismisses and stores first-run state', (
+    tester,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboarding = OnboardingProvider(prefs: prefs);
+
+    await _pumpGame(tester, onboarding: onboarding);
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(onboarding.shouldShowDragOnboarding, isFalse);
+    expect(prefs.getBool('pk.dragOnboardingSeen'), isTrue);
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsNothing);
+
+    await tester.pump();
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsNothing);
   });
 }
 
 Future<void> _pumpGame(
   WidgetTester tester, {
   PuzzleGameProvider? provider,
-  NavigatorObserver? observer,
+  ProgressProvider? progress,
+  OnboardingProvider? onboarding,
+  bool disableAnimations = false,
 }) async {
+  final prefs = await SharedPreferences.getInstance();
+  final defaultOnboarding = OnboardingProvider(prefs: prefs)..markLoaded();
+  if (onboarding == null) {
+    await defaultOnboarding.completeDragOnboarding();
+  }
   await tester.pumpWidget(
-    ChangeNotifierProvider<PuzzleGameProvider>.value(
-      value: provider ?? _provider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<PuzzleGameProvider>.value(
+          value: provider ?? _provider(),
+        ),
+        ChangeNotifierProvider<ProgressProvider>.value(
+          value: progress ?? ProgressProvider(prefs: prefs),
+        ),
+        ChangeNotifierProvider<OnboardingProvider>.value(
+          value: onboarding ?? defaultOnboarding,
+        ),
+      ],
       child: MaterialApp(
-        home: const PuzzleGameScreen(),
-        navigatorObservers: [?observer],
-        routes: {AppRoutes.celebration: (_) => const CelebrationScreen()},
+        home: MediaQuery(
+          data: MediaQueryData(disableAnimations: disableAnimations),
+          child: const PuzzleGameScreen(),
+        ),
+        routes: {AppRoutes.selection: (_) => const SizedBox.shrink()},
       ),
     ),
   );
@@ -268,14 +388,4 @@ List<T> _identityShuffler<T>(List<T> pieces, {required int seed}) {
   return List.unmodifiable(pieces);
 }
 
-class _CountingNavigatorObserver extends NavigatorObserver {
-  int celebrationPushes = 0;
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-    if (route.settings.name == AppRoutes.celebration) {
-      celebrationPushes += 1;
-    }
-  }
-}
+void _noop() {}

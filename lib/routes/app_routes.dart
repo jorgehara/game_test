@@ -5,6 +5,7 @@ import '../screens/celebration_screen.dart';
 import '../screens/menu_screen.dart';
 import '../screens/puzzle_game_screen.dart';
 import '../screens/puzzle_selection_screen.dart';
+import '../screens/settings_screen.dart';
 import '../screens/splash_screen.dart';
 
 class AppRoutes {
@@ -16,6 +17,7 @@ class AppRoutes {
   static const selection = '/selection';
   static const game = '/game';
   static const celebration = '/celebration';
+  static const settings = '/settings';
 
   static Map<String, WidgetBuilder> get routes => {
     splash: (_) => const SplashScreen(),
@@ -24,5 +26,6 @@ class AppRoutes {
     selection: (_) => const PuzzleSelectionScreen(),
     game: (_) => const PuzzleGameScreen(),
     celebration: (_) => const CelebrationScreen(),
+    settings: (_) => const SettingsScreen(),
   };
 }

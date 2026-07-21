@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:puzzle_kids/providers/app_shell_provider.dart';
+import 'package:puzzle_kids/providers/onboarding_provider.dart';
+import 'package:puzzle_kids/providers/progress_provider.dart';
 import 'package:puzzle_kids/providers/puzzle_game_provider.dart';
+import 'package:puzzle_kids/providers/settings_provider.dart';
 import 'package:puzzle_kids/routes/app_routes.dart';
 import 'package:puzzle_kids/screens/puzzle_game_screen.dart';
 import 'package:puzzle_kids/screens/puzzle_selection_screen.dart';
 import 'package:puzzle_kids/theme/pk_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('renders accessible premium puzzle cards with metadata', (
     tester,
   ) async {
@@ -57,6 +65,10 @@ Future<void> _pumpSelection(
   WidgetTester tester, {
   PuzzleGameProvider? provider,
 }) async {
+  final prefs = await SharedPreferences.getInstance();
+  final onboarding = OnboardingProvider(prefs: prefs)..markLoaded();
+  await onboarding.completeDragOnboarding();
+
   await tester.pumpWidget(
     MultiProvider(
       providers: [
@@ -64,6 +76,13 @@ Future<void> _pumpSelection(
         ChangeNotifierProvider<PuzzleGameProvider>.value(
           value: provider ?? PuzzleGameProvider(),
         ),
+        ChangeNotifierProvider<ProgressProvider>(
+          create: (_) => ProgressProvider(prefs: prefs)..markLoaded(),
+        ),
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) => SettingsProvider(prefs: prefs)..markLoaded(),
+        ),
+        ChangeNotifierProvider<OnboardingProvider>.value(value: onboarding),
       ],
       child: MaterialApp(
         theme: PkTheme.light(),

@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/puzzle_piece.dart';
+import '../providers/onboarding_provider.dart';
+import '../providers/progress_provider.dart';
 import '../providers/puzzle_game_provider.dart';
 import '../routes/app_routes.dart';
 import '../theme/pk_tokens.dart';
+import '../widgets/completion_dialog.dart';
 import '../widgets/pk_button.dart';
 import '../widgets/pk_progress.dart';
 import '../widgets/pk_scaffold.dart';
@@ -70,13 +75,16 @@ class _ReadyGameState extends State<_ReadyGame> {
   final _boardKey = GlobalKey();
   _DragState? _drag;
   var _gestureVersion = 0;
-  var _completionNavigationScheduled = false;
+  String? _completionDialogPuzzleId;
+  var _completionDialogOpen = false;
+  var _onboardingDialogOpen = false;
 
   PuzzleGameProvider get provider => widget.provider;
 
   @override
   Widget build(BuildContext context) {
-    _scheduleCompletionNavigation(context);
+    _scheduleDragOnboarding(context);
+    _scheduleCompletionDialog(context);
 
     final puzzle = provider.currentPuzzle!;
     final total = provider.pieces.length;
@@ -174,21 +182,80 @@ class _ReadyGameState extends State<_ReadyGame> {
     );
   }
 
-  void _scheduleCompletionNavigation(BuildContext context) {
-    if (!provider.isCompleted) {
-      _completionNavigationScheduled = false;
-      return;
-    }
-    if (_completionNavigationScheduled) {
+  void _scheduleDragOnboarding(BuildContext context) {
+    final onboarding = context.watch<OnboardingProvider>();
+    if (!onboarding.shouldShowDragOnboarding || _onboardingDialogOpen) {
       return;
     }
 
-    _completionNavigationScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _onboardingDialogOpen = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || !onboarding.shouldShowDragOnboarding) {
+        _onboardingDialogOpen = false;
+        return;
+      }
+
+      await showDialog<void>(
+        context: this.context,
+        barrierDismissible: false,
+        builder: (dialogContext) => _DragOnboardingDialog(
+          onDismiss: () async {
+            await onboarding.completeDragOnboarding();
+          },
+        ),
+      );
+
+      if (mounted) {
+        setState(() => _onboardingDialogOpen = false);
+      }
+    });
+  }
+
+  void _scheduleCompletionDialog(BuildContext context) {
+    if (!provider.isCompleted) {
+      _completionDialogPuzzleId = null;
+      _completionDialogOpen = false;
+      return;
+    }
+    final puzzle = provider.currentPuzzle;
+    if (puzzle == null ||
+        _completionDialogOpen ||
+        _completionDialogPuzzleId == puzzle.id) {
+      return;
+    }
+
+    _completionDialogOpen = true;
+    _completionDialogPuzzleId = puzzle.id;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted || !provider.isCompleted) {
         return;
       }
-      Navigator.pushNamed(context, AppRoutes.celebration);
+      await context.read<ProgressProvider>().markCompleted(puzzle.id);
+      if (!mounted) return;
+
+      await showDialog<void>(
+        context: this.context,
+        barrierDismissible: true,
+        builder: (dialogContext) => CompletionDialog(
+          puzzleName: puzzle.name,
+          onReplay: () {
+            Navigator.of(dialogContext).maybePop();
+            _reset();
+          },
+          onContinue: () {
+            Navigator.of(dialogContext).maybePop();
+            Navigator.pushNamedAndRemoveUntil(
+              this.context,
+              AppRoutes.selection,
+              ModalRoute.withName(AppRoutes.menu),
+            );
+          },
+        ),
+      );
+
+      if (mounted) {
+        setState(() => _completionDialogOpen = false);
+      }
     });
   }
 
@@ -299,6 +366,53 @@ class _ReadyGameState extends State<_ReadyGame> {
     setState(() {
       _drag = null;
     });
+  }
+}
+
+class _DragOnboardingDialog extends StatelessWidget {
+  const _DragOnboardingDialog({required this.onDismiss});
+
+  final Future<void> Function() onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope<void>(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          unawaited(onDismiss());
+        }
+      },
+      child: AlertDialog(
+        key: const Key('drag-onboarding-dialog'),
+        icon: Icon(
+          Icons.touch_app_rounded,
+          color: context.pkColors.primary,
+          semanticLabel: 'Tutorial de arrastrar piezas',
+        ),
+        title: const Text('Arrastrá y soltá'),
+        content: const Text(
+          'Tocá una pieza, arrastrala hasta su lugar y soltala cerca del dibujo.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => _dismiss(context),
+            child: const Text('Omitir'),
+          ),
+          PkButton(
+            label: 'Entendido',
+            icon: Icons.check_rounded,
+            onPressed: () => _dismiss(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _dismiss(BuildContext context) async {
+    await onDismiss();
+    if (context.mounted) {
+      Navigator.of(context).maybePop();
+    }
   }
 }
 

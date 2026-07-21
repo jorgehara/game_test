@@ -5,8 +5,13 @@ import 'package:puzzle_kids/theme/pk_theme.dart';
 import 'package:puzzle_kids/theme/pk_tokens.dart';
 import 'package:puzzle_kids/widgets/pk_button.dart';
 import 'package:puzzle_kids/widgets/pk_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('theme exposes semantic tokens and accessible controls', (
     tester,
   ) async {
@@ -45,6 +50,7 @@ void main() {
 
   testWidgets('app provides light and dark tokenized themes', (tester) async {
     await tester.pumpWidget(const PuzzleKidsApp());
+    await tester.pumpAndSettle();
 
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
 

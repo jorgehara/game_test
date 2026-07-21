@@ -187,4 +187,9 @@ const _items = [
     label: 'Juego',
     icon: Icons.extension_rounded,
   ),
+  _PkNavEntry(
+    route: AppRoutes.settings,
+    label: 'Ajustes',
+    icon: Icons.settings_rounded,
+  ),
 ];
