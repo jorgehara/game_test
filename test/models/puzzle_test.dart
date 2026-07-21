@@ -12,6 +12,9 @@ void main() {
         name: 'Lion',
         category: PuzzleCategory.animals,
         imagePath: 'assets/images/animals/lion.png',
+        thumbnailPath: 'assets/images/animals/lion_thumb.png',
+        placeholderSeed: 3,
+        placeholderLabel: 'Figura de león',
         difficulty: PuzzleDifficulty.level(2),
         grid: GridSpec(rows: 2, columns: 2),
       );
@@ -20,6 +23,10 @@ void main() {
       expect(puzzle.name, 'Lion');
       expect(puzzle.category, PuzzleCategory.animals);
       expect(puzzle.imagePath, 'assets/images/animals/lion.png');
+      expect(puzzle.thumbnailPath, 'assets/images/animals/lion_thumb.png');
+      expect(puzzle.levelLabel, 'Nivel 2');
+      expect(puzzle.placeholderSeed, 3);
+      expect(puzzle.placeholderLabel, 'Figura de león');
       expect(puzzle.difficulty.targetPieceCount, 4);
       expect(puzzle.grid.pieceCount, 4);
     });
@@ -28,6 +35,8 @@ void main() {
       expect(() => _puzzle(id: ''), throwsArgumentError);
       expect(() => _puzzle(name: ''), throwsArgumentError);
       expect(() => _puzzle(imagePath: ''), throwsArgumentError);
+      expect(() => _puzzle(thumbnailPath: ''), throwsArgumentError);
+      expect(() => _puzzle(placeholderLabel: ''), throwsArgumentError);
     });
 
     test('is equality-friendly by metadata', () {
@@ -41,12 +50,17 @@ Puzzle _puzzle({
   String id = 'lion',
   String name = 'Lion',
   String imagePath = 'assets/images/animals/lion.png',
+  String thumbnailPath = 'assets/images/animals/lion_thumb.png',
+  String placeholderLabel = 'Figura de león',
 }) {
   return Puzzle(
     id: id,
     name: name,
     category: PuzzleCategory.animals,
     imagePath: imagePath,
+    thumbnailPath: thumbnailPath,
+    placeholderSeed: 3,
+    placeholderLabel: placeholderLabel,
     difficulty: PuzzleDifficulty.level(2),
     grid: GridSpec(rows: 2, columns: 2),
   );

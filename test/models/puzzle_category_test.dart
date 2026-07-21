@@ -3,11 +3,25 @@ import 'package:puzzle_kids/models/puzzle_category.dart';
 
 void main() {
   group('PuzzleCategory', () {
-    test('contains the six PRD categories with stable ids', () {
+    test('contains preschool and fantasy categories with stable ids', () {
       expect(
         PuzzleCategory.values.map((category) => category.id),
-        equals(['animals', 'vehicles', 'fruits', 'farm', 'dinosaurs', 'space']),
+        equals([
+          'animals',
+          'vehicles',
+          'fruits',
+          'farm',
+          'dinosaurs',
+          'space',
+          'castles',
+          'princesses',
+          'unicorns',
+          'ocean',
+        ]),
       );
+      expect(PuzzleCategory.castles.label, 'Castillos');
+      expect(PuzzleCategory.princesses.label, 'Princesas');
+      expect(PuzzleCategory.unicorns.label, 'Unicornios');
     });
 
     test('parses known category ids', () {

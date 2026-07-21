@@ -27,9 +27,11 @@ void main() {
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Elegir puzzle'));
     await tester.pumpAndSettle();
-    expect(find.text('Selección'), findsOneWidget);
+    expect(find.text('Elegí tu puzzle'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Jugar'));
+    await tester.tap(
+      find.widgetWithText(FilledButton, 'Jugar Castillo brillante'),
+    );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('puzzle-game-screen')), findsOneWidget);
     expect(find.byKey(const Key('puzzle-board')), findsOneWidget);

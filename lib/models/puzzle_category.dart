@@ -1,14 +1,19 @@
 enum PuzzleCategory {
-  animals('animals'),
-  vehicles('vehicles'),
-  fruits('fruits'),
-  farm('farm'),
-  dinosaurs('dinosaurs'),
-  space('space');
+  animals('animals', 'Animales'),
+  vehicles('vehicles', 'Vehículos'),
+  fruits('fruits', 'Frutas'),
+  farm('farm', 'Granja'),
+  dinosaurs('dinosaurs', 'Dinosaurios'),
+  space('space', 'Espacio'),
+  castles('castles', 'Castillos'),
+  princesses('princesses', 'Princesas'),
+  unicorns('unicorns', 'Unicornios'),
+  ocean('ocean', 'Océano');
 
-  const PuzzleCategory(this.id);
+  const PuzzleCategory(this.id, this.label);
 
   final String id;
+  final String label;
 
   static PuzzleCategory fromId(String id) {
     for (final category in values) {

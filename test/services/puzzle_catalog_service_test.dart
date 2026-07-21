@@ -7,27 +7,40 @@ import 'package:puzzle_kids/services/puzzle_catalog_service.dart';
 
 void main() {
   group('PuzzleCatalogService', () {
-    test('exposes exactly 20 unique inert puzzle metadata entries', () {
+    test('exposes more than 20 unique inert child-safe metadata entries', () {
       final puzzles = PuzzleCatalogService.all();
 
-      expect(puzzles, hasLength(20));
-      expect(puzzles.map((puzzle) => puzzle.id).toSet(), hasLength(20));
+      expect(puzzles.length, greaterThan(20));
+      expect(
+        puzzles.map((puzzle) => puzzle.id).toSet(),
+        hasLength(puzzles.length),
+      );
+      expect(
+        puzzles.map((puzzle) => puzzle.category).toSet(),
+        containsAll([
+          PuzzleCategory.castles,
+          PuzzleCategory.princesses,
+          PuzzleCategory.unicorns,
+        ]),
+      );
       expect(
         puzzles.map((puzzle) => puzzle.category).toSet(),
         PuzzleCategory.values.toSet(),
       );
-      expect(puzzles.map((puzzle) => puzzle.difficulty.level).toSet(), {
-        1,
-        2,
-        3,
-        4,
-        5,
-      });
+      expect(puzzles.map((puzzle) => puzzle.difficulty.level).toSet(), {2, 4});
       expect(
         puzzles.map((puzzle) => puzzle.grid.pieceCount).toSet(),
-        containsAll([2, 4, 6, 9, 12]),
+        containsAll([4, 9]),
       );
       expect(puzzles.every((puzzle) => puzzle.name.trim().isNotEmpty), isTrue);
+      expect(
+        puzzles.every((puzzle) => puzzle.levelLabel.trim().isNotEmpty),
+        isTrue,
+      );
+      expect(
+        puzzles.every((puzzle) => puzzle.placeholderLabel.trim().isNotEmpty),
+        isTrue,
+      );
       expect(
         puzzles.every(
           (puzzle) => puzzle.imagePath.startsWith('assets/images/'),
@@ -40,6 +53,24 @@ void main() {
       );
     });
 
+    test('exposes only 2x2 and 3x3 puzzles as playable', () {
+      final playable = PuzzleCatalogService.playable();
+
+      expect(playable, isNotEmpty);
+      expect(
+        playable.every((puzzle) => puzzle.grid.isSupportedForGeneration),
+        isTrue,
+      );
+      expect(
+        playable.every(
+          (puzzle) =>
+              (puzzle.grid.rows == 2 && puzzle.grid.columns == 2) ||
+              (puzzle.grid.rows == 3 && puzzle.grid.columns == 3),
+        ),
+        isTrue,
+      );
+    });
+
     test('returns immutable catalog metadata without loading asset files', () {
       final puzzles = PuzzleCatalogService.all();
 
@@ -48,6 +79,10 @@ void main() {
         throwsUnsupportedError,
       );
       expect(puzzles.first.imagePath, 'assets/images/animals/lion.png');
+      expect(
+        puzzles.first.thumbnailPath,
+        'assets/images/animals/lion_thumb.png',
+      );
     });
 
     test(
@@ -87,6 +122,9 @@ Puzzle _validPuzzle({
     name: 'Lion Copy',
     category: PuzzleCategory.animals,
     imagePath: imagePath,
+    thumbnailPath: imagePath.replaceFirst('.png', '_thumb.png'),
+    placeholderSeed: 1,
+    placeholderLabel: 'Figura de prueba',
     difficulty: PuzzleDifficulty.level(2),
     grid: grid ?? GridSpec(rows: 2, columns: 2),
   );

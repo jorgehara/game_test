@@ -1,0 +1,35 @@
+[
+  {
+    "id": "castle-bright",
+    "name": "Castillo brillante",
+    "category": "castles",
+    "level": 2,
+    "grid": { "rows": 2, "columns": 2 },
+    "image": "assets/images/castles/castle-bright.png",
+    "thumbnail": "assets/images/castles/castle-bright_thumb.png",
+    "placeholder": "Castillo con torres redondas",
+    "approved": false
+  },
+  {
+    "id": "princess-crown",
+    "name": "Corona de princesa",
+    "category": "princesses",
+    "level": 2,
+    "grid": { "rows": 2, "columns": 2 },
+    "image": "assets/images/princesses/princess-crown.png",
+    "thumbnail": "assets/images/princesses/princess-crown_thumb.png",
+    "placeholder": "Corona amable de princesa",
+    "approved": false
+  },
+  {
+    "id": "unicorn-cloud",
+    "name": "Unicornio nube",
+    "category": "unicorns",
+    "level": 2,
+    "grid": { "rows": 2, "columns": 2 },
+    "image": "assets/images/unicorns/unicorn-cloud.png",
+    "thumbnail": "assets/images/unicorns/unicorn-cloud_thumb.png",
+    "placeholder": "Unicornio sobre una nube",
+    "approved": false
+  }
+]
