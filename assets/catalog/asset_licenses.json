@@ -1,0 +1,41 @@
+[
+  {
+    "id": "castle-bright",
+    "path": "assets/images/castles/castle-bright.webp",
+    "origin": "sample-only-no-binary-bundled",
+    "license": "UNAPPROVED-SAMPLE",
+    "attribution": "Sample manifest metadata only; not approved for rendering.",
+    "approved": false,
+    "approvedBy": "",
+    "approvedAt": "",
+    "dimensions": { "width": 1024, "height": 1024 },
+    "format": "webp",
+    "bytes": 320000
+  },
+  {
+    "id": "princess-crown",
+    "path": "assets/images/princesses/princess-crown.webp",
+    "origin": "sample-only-no-binary-bundled",
+    "license": "UNAPPROVED-SAMPLE",
+    "attribution": "Sample manifest metadata only; not approved for rendering.",
+    "approved": false,
+    "approvedBy": "",
+    "approvedAt": "",
+    "dimensions": { "width": 1024, "height": 1024 },
+    "format": "webp",
+    "bytes": 320000
+  },
+  {
+    "id": "unicorn-cloud",
+    "path": "assets/images/unicorns/unicorn-cloud.webp",
+    "origin": "sample-only-no-binary-bundled",
+    "license": "UNAPPROVED-SAMPLE",
+    "attribution": "Sample manifest metadata only; not approved for rendering.",
+    "approved": false,
+    "approvedBy": "",
+    "approvedAt": "",
+    "dimensions": { "width": 1024, "height": 1024 },
+    "format": "webp",
+    "bytes": 320000
+  }
+]

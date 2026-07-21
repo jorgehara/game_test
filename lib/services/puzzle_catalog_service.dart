@@ -2,6 +2,7 @@ import '../models/grid_spec.dart';
 import '../models/puzzle.dart';
 import '../models/puzzle_category.dart';
 import '../models/puzzle_difficulty.dart';
+import 'asset_manifest_validator.dart';
 
 class PuzzleCatalogService {
   PuzzleCatalogService._();
@@ -115,6 +116,19 @@ class PuzzleCatalogService {
     return List.unmodifiable(
       playable().where((puzzle) => puzzle.category == category),
     );
+  }
+
+  static AssetManifestEntry? approvedAssetFor(
+    Puzzle puzzle,
+    Iterable<AssetManifestEntry> manifest, {
+    Set<String> existingAssetPaths = const {},
+  }) {
+    final usableAssets = AssetManifestValidator.approvedUsableAssets(
+      manifest.where((entry) => entry.id == puzzle.id),
+      existingAssetPaths: existingAssetPaths,
+    );
+
+    return usableAssets.isEmpty ? null : usableAssets.first;
   }
 
   static void validate(Iterable<Puzzle> puzzles) {

@@ -3,6 +3,7 @@ import 'package:puzzle_kids/models/grid_spec.dart';
 import 'package:puzzle_kids/models/puzzle.dart';
 import 'package:puzzle_kids/models/puzzle_category.dart';
 import 'package:puzzle_kids/models/puzzle_difficulty.dart';
+import 'package:puzzle_kids/services/asset_manifest_validator.dart';
 import 'package:puzzle_kids/services/puzzle_catalog_service.dart';
 
 void main() {
@@ -82,6 +83,52 @@ void main() {
       expect(
         puzzles.first.thumbnailPath,
         'assets/images/animals/lion_thumb.png',
+      );
+    });
+
+    test('uses only approved existing assets and falls back otherwise', () {
+      final puzzle = PuzzleCatalogService.playable().first;
+      final unapproved = AssetManifestEntry(
+        id: puzzle.id,
+        path: puzzle.imagePath,
+        origin: 'Example origin',
+        license: 'CC0-1.0',
+        attribution: 'Example attribution',
+        approved: false,
+        approvedBy: '',
+        approvedAt: '',
+        width: 1024,
+        height: 1024,
+        format: 'png',
+        bytes: 320000,
+      );
+      final approved = AssetManifestEntry(
+        id: puzzle.id,
+        path: puzzle.imagePath,
+        origin: 'Example origin',
+        license: 'CC0-1.0',
+        attribution: 'Example attribution',
+        approved: true,
+        approvedBy: 'Legal reviewer',
+        approvedAt: '2026-07-21T00:00:00Z',
+        width: 1024,
+        height: 1024,
+        format: 'png',
+        bytes: 320000,
+      );
+
+      expect(
+        PuzzleCatalogService.approvedAssetFor(puzzle, [unapproved]),
+        isNull,
+      );
+      expect(PuzzleCatalogService.approvedAssetFor(puzzle, [approved]), isNull);
+      expect(
+        PuzzleCatalogService.approvedAssetFor(
+          puzzle,
+          [approved],
+          existingAssetPaths: {puzzle.imagePath},
+        ),
+        approved,
       );
     });
 

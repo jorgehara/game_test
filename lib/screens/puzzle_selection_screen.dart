@@ -5,6 +5,7 @@ import '../models/puzzle.dart';
 import '../models/puzzle_category.dart';
 import '../providers/puzzle_game_provider.dart';
 import '../routes/app_routes.dart';
+import '../services/asset_manifest_validator.dart';
 import '../services/puzzle_catalog_service.dart';
 import '../theme/pk_tokens.dart';
 import '../widgets/pk_card.dart';
@@ -12,7 +13,14 @@ import '../widgets/pk_image_tile.dart';
 import '../widgets/pk_scaffold.dart';
 
 class PuzzleSelectionScreen extends StatelessWidget {
-  const PuzzleSelectionScreen({super.key});
+  const PuzzleSelectionScreen({
+    super.key,
+    this.assetManifest = const [],
+    this.existingAssetPaths = const {},
+  });
+
+  final List<AssetManifestEntry> assetManifest;
+  final Set<String> existingAssetPaths;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +41,11 @@ class PuzzleSelectionScreen extends StatelessWidget {
                     return const _SelectionHeader();
                   }
 
-                  return _PuzzleSelectionCard(puzzle: puzzles[index - 1]);
+                  return _PuzzleSelectionCard(
+                    puzzle: puzzles[index - 1],
+                    assetManifest: assetManifest,
+                    existingAssetPaths: existingAssetPaths,
+                  );
                 },
               ),
       ),
@@ -83,14 +95,25 @@ class _SelectionHeader extends StatelessWidget {
 }
 
 class _PuzzleSelectionCard extends StatelessWidget {
-  const _PuzzleSelectionCard({required this.puzzle});
+  const _PuzzleSelectionCard({
+    required this.puzzle,
+    required this.assetManifest,
+    required this.existingAssetPaths,
+  });
 
   final Puzzle puzzle;
+  final List<AssetManifestEntry> assetManifest;
+  final Set<String> existingAssetPaths;
 
   @override
   Widget build(BuildContext context) {
     final spacing = context.pkSpacing;
     final colors = context.pkColors;
+    final approvedAsset = PuzzleCatalogService.approvedAssetFor(
+      puzzle,
+      assetManifest,
+      existingAssetPaths: existingAssetPaths,
+    );
 
     return PkCard(
       child: Row(
@@ -99,6 +122,9 @@ class _PuzzleSelectionCard extends StatelessWidget {
           PkImageTile(
             label: 'Imagen segura de ${puzzle.name}',
             seed: puzzle.placeholderSeed,
+            assetPath: approvedAsset?.path,
+            cacheWidth: 256,
+            cacheHeight: 256,
           ),
           SizedBox(width: spacing.md),
           Expanded(

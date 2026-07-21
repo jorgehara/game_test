@@ -25,6 +25,7 @@ void main() {
       find.bySemanticsLabel('Imagen segura de Castillo brillante'),
       findsOneWidget,
     );
+    expect(find.byType(Image), findsNothing);
 
     final playButton = find.widgetWithText(
       FilledButton,

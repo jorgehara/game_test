@@ -1,0 +1,7 @@
+Puzzle Kids asset notice
+
+No real third-party puzzle images are bundled in this slice.
+
+The bundled assets/catalog/asset_licenses.json file is an unapproved sample only. Its entries are approved=false, are rejected by AssetManifestValidator, and must not render as real puzzle images.
+
+Future image assets must be listed in assets/catalog/asset_licenses.json before use, with origin, license, attribution, dimensions, format, required bytes, approvedBy, approvedAt, and approved=true only after review.
