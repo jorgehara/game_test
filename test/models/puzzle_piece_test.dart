@@ -86,6 +86,59 @@ void main() {
         _piece(id: 'lion_0_0', row: 0, column: 0, grid: grid),
       );
     });
+
+    test('uses all-flat immutable edges by default', () {
+      final piece = _piece(id: 'lion_0_0', row: 0, column: 0, grid: grid);
+
+      expect(piece.edges, PuzzlePieceEdges.allFlat);
+      expect(piece.edges.top, PuzzlePieceEdge.flat);
+      expect(piece.edges.right, PuzzlePieceEdge.flat);
+      expect(piece.edges.bottom, PuzzlePieceEdge.flat);
+      expect(piece.edges.left, PuzzlePieceEdge.flat);
+    });
+
+    test('includes edges in equality, hashCode, and toString', () {
+      const tabRight = PuzzlePieceEdges(
+        top: PuzzlePieceEdge.flat,
+        right: PuzzlePieceEdge.tab,
+        bottom: PuzzlePieceEdge.blank,
+        left: PuzzlePieceEdge.flat,
+      );
+      const blankRight = PuzzlePieceEdges(
+        top: PuzzlePieceEdge.flat,
+        right: PuzzlePieceEdge.blank,
+        bottom: PuzzlePieceEdge.blank,
+        left: PuzzlePieceEdge.flat,
+      );
+
+      final first = _piece(
+        id: 'lion_0_0',
+        row: 0,
+        column: 0,
+        grid: grid,
+        edges: tabRight,
+      );
+      final same = _piece(
+        id: 'lion_0_0',
+        row: 0,
+        column: 0,
+        grid: grid,
+        edges: tabRight,
+      );
+      final different = _piece(
+        id: 'lion_0_0',
+        row: 0,
+        column: 0,
+        grid: grid,
+        edges: blankRight,
+      );
+
+      expect(first, same);
+      expect(first.hashCode, same.hashCode);
+      expect(first, isNot(different));
+      expect(first.toString(), contains('edges: $tabRight'));
+      expect(tabRight.toString(), contains('right: PuzzlePieceEdge.tab'));
+    });
   });
 }
 
@@ -94,10 +147,12 @@ PuzzlePiece _piece({
   required int row,
   required int column,
   required GridSpec grid,
+  PuzzlePieceEdges edges = PuzzlePieceEdges.allFlat,
 }) {
   return PuzzlePiece(
     id: id,
     correctPosition: GridPosition(row: row, column: column, grid: grid),
+    edges: edges,
     crop: NormalizedRect(
       left: column / grid.columns,
       top: row / grid.rows,

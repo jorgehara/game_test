@@ -96,6 +96,9 @@ class _ReadyGame extends StatefulWidget {
 class _ReadyGameState extends State<_ReadyGame> {
   static const _snapThreshold = 0.10;
   static const _returnDuration = Duration(milliseconds: 300);
+  static const _wideTrayWidth = 280.0;
+  static const _completedTrayHeight = 104.0;
+  static const _narrowTrayHeight = 148.0;
 
   final _stackKey = GlobalKey();
   final _boardKey = GlobalKey();
@@ -167,15 +170,17 @@ class _ReadyGameState extends State<_ReadyGame> {
                     placedPositions: provider.placedPositions,
                     pieceImageSource: pieceImageSource,
                   );
-                  final tray = _PuzzleTray(
-                    provider: provider,
-                    pieceImageSource: pieceImageSource,
-                    draggingPieceId: _drag?.piece.id,
-                    onDragStart: (piece, context) =>
-                        _startDrag(piece, context, pieceImageSource),
-                    onDragUpdate: _updateDrag,
-                    onDragEnd: _endDrag,
-                  );
+                  final tray = provider.isCompleted
+                      ? const _CompletedPuzzleTray()
+                      : _PuzzleTray(
+                          provider: provider,
+                          pieceImageSource: pieceImageSource,
+                          draggingPieceId: _drag?.piece.id,
+                          onDragStart: (piece, context) =>
+                              _startDrag(piece, context, pieceImageSource),
+                          onDragUpdate: _updateDrag,
+                          onDragEnd: _endDrag,
+                        );
 
                   return Column(
                     children: [
@@ -183,19 +188,39 @@ class _ReadyGameState extends State<_ReadyGame> {
                       SizedBox(height: spacing.md),
                       Expanded(
                         child: isWide
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(flex: 3, child: board),
-                                  SizedBox(width: spacing.lg),
-                                  SizedBox(width: 280, child: tray),
-                                ],
-                              )
+                            ? provider.isCompleted
+                                  ? Column(
+                                      children: [
+                                        Expanded(child: board),
+                                        SizedBox(height: spacing.md),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          height: _completedTrayHeight,
+                                          child: tray,
+                                        ),
+                                      ],
+                                    )
+                                  : Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        Expanded(flex: 3, child: board),
+                                        SizedBox(width: spacing.lg),
+                                        SizedBox(
+                                          width: _wideTrayWidth,
+                                          child: tray,
+                                        ),
+                                      ],
+                                    )
                             : Column(
                                 children: [
                                   Expanded(child: board),
                                   SizedBox(height: spacing.md),
-                                  SizedBox(height: 148, child: tray),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: _narrowTrayHeight,
+                                    child: tray,
+                                  ),
                                 ],
                               ),
                       ),
@@ -576,40 +601,82 @@ class _PuzzleTray extends StatelessWidget {
     final spacing = context.pkSpacing;
     return Semantics(
       label: 'Bandeja de piezas',
-      child: DecoratedBox(
-        key: const Key('puzzle-tray'),
-        decoration: BoxDecoration(
-          color: colors.surfaceAlt,
-          border: Border.all(color: colors.outline, width: 3),
-          borderRadius: BorderRadius.circular(context.pkRadius.card),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(spacing.sm),
-          child: Wrap(
-            spacing: spacing.sm,
-            runSpacing: spacing.sm,
-            alignment: WrapAlignment.center,
-            children: [
-              for (final piece in provider.piecesInTray)
-                Builder(
-                  builder: (pieceContext) {
-                    return GestureDetector(
-                      onPanStart: (_) => onDragStart(piece, pieceContext),
-                      onPanUpdate: onDragUpdate,
-                      onPanEnd: onDragEnd,
-                      child: Opacity(
-                        opacity: draggingPieceId == piece.id ? 0 : 1,
-                        child: PuzzlePieceTile(
-                          key: Key('puzzle-piece-${piece.id}'),
-                          piece: piece,
-                          totalPieces: provider.pieces.length,
-                          imageSource: pieceImageSource,
+      child: SizedBox.expand(
+        child: DecoratedBox(
+          key: const Key('puzzle-tray'),
+          decoration: BoxDecoration(
+            color: colors.surfaceAlt,
+            border: Border.all(
+              color: colors.outline.withValues(alpha: 0.64),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(context.pkRadius.card),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(spacing.sm),
+            child: Wrap(
+              spacing: spacing.sm,
+              runSpacing: spacing.sm,
+              alignment: WrapAlignment.center,
+              children: [
+                for (final piece in provider.piecesInTray)
+                  Builder(
+                    builder: (pieceContext) {
+                      return GestureDetector(
+                        onPanStart: (_) => onDragStart(piece, pieceContext),
+                        onPanUpdate: onDragUpdate,
+                        onPanEnd: onDragEnd,
+                        child: Opacity(
+                          opacity: draggingPieceId == piece.id ? 0 : 1,
+                          child: PuzzlePieceTile(
+                            key: Key('puzzle-piece-${piece.id}'),
+                            piece: piece,
+                            totalPieces: provider.pieces.length,
+                            imageSource: pieceImageSource,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-            ],
+                      );
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompletedPuzzleTray extends StatelessWidget {
+  const _CompletedPuzzleTray();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.pkColors;
+    final spacing = context.pkSpacing;
+
+    return Semantics(
+      label: 'Bandeja completa sin piezas pendientes',
+      child: SizedBox.expand(
+        key: const Key('puzzle-tray-complete'),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.surfaceAlt.withValues(alpha: 0.72),
+            border: Border.all(
+              color: colors.outline.withValues(alpha: 0.32),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(context.pkRadius.card),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(spacing.md),
+            child: Center(
+              child: Text(
+                'Todas las piezas están en el tablero',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
         ),
       ),

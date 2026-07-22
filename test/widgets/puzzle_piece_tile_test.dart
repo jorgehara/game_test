@@ -4,6 +4,7 @@ import 'package:puzzle_kids/models/grid_position.dart';
 import 'package:puzzle_kids/models/grid_spec.dart';
 import 'package:puzzle_kids/models/normalized_rect.dart';
 import 'package:puzzle_kids/models/puzzle_piece.dart';
+import 'package:puzzle_kids/widgets/puzzle_piece_shape.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_tile.dart';
 
 void main() {
@@ -206,6 +207,60 @@ void main() {
       );
       expect(find.bySemanticsLabel('Pieza 3 de 4'), findsOneWidget);
     });
+
+    testWidgets(
+      'uses the shared shape clip and painter for image and fallback',
+      (tester) async {
+        const source = PuzzlePieceImageSource(
+          assetPath: 'assets/images/castles/castillo-princesa.webp',
+          sourceWidth: 1024,
+          sourceHeight: 1024,
+        );
+        final shapedPiece = _piece2x2(
+          0,
+          0,
+          edges: const PuzzlePieceEdges(
+            top: PuzzlePieceEdge.flat,
+            right: PuzzlePieceEdge.tab,
+            bottom: PuzzlePieceEdge.blank,
+            left: PuzzlePieceEdge.flat,
+          ),
+        );
+
+        await tester.pumpWidget(
+          _host(_tile(shapedPiece, totalPieces: 4, imageSource: source)),
+        );
+
+        expect(
+          find.byKey(const Key('puzzle-piece-shape-piece-0-0')),
+          findsOneWidget,
+        );
+        expect(find.byType(ClipPath), findsOneWidget);
+        expect(
+          tester.widget<ClipPath>(find.byType(ClipPath)).clipper,
+          isA<PuzzlePieceShapeClipper>(),
+        );
+        expect(
+          tester
+              .widget<CustomPaint>(
+                find.byKey(const Key('puzzle-piece-shape-piece-0-0')),
+              )
+              .painter,
+          isA<PuzzlePieceShapePainter>(),
+        );
+        expect(find.bySemanticsLabel('Pieza 1 de 4'), findsOneWidget);
+
+        await tester.pumpWidget(_host(_tile(shapedPiece, totalPieces: 4)));
+
+        expect(find.text('1'), findsOneWidget);
+        expect(find.byType(ClipPath), findsOneWidget);
+        expect(find.bySemanticsLabel('Pieza 1 de 4'), findsOneWidget);
+        expect(
+          tester.getSize(find.byType(PuzzlePieceTile)),
+          const Size(86, 86),
+        );
+      },
+    );
   });
 }
 
@@ -229,18 +284,29 @@ PuzzlePieceTile _tile(
   );
 }
 
-PuzzlePiece _piece2x2(int row, int column) {
-  return _piece(grid: GridSpec(rows: 2, columns: 2), row: row, column: column);
+PuzzlePiece _piece2x2(
+  int row,
+  int column, {
+  PuzzlePieceEdges edges = PuzzlePieceEdges.allFlat,
+}) {
+  return _piece(
+    grid: GridSpec(rows: 2, columns: 2),
+    row: row,
+    column: column,
+    edges: edges,
+  );
 }
 
 PuzzlePiece _piece({
   required GridSpec grid,
   required int row,
   required int column,
+  PuzzlePieceEdges edges = PuzzlePieceEdges.allFlat,
 }) {
   return PuzzlePiece(
     id: 'piece-$row-$column',
     correctPosition: GridPosition(row: row, column: column, grid: grid),
+    edges: edges,
     crop: NormalizedRect(
       left: column / grid.columns,
       top: row / grid.rows,

@@ -6,6 +6,13 @@ import '../models/puzzle_piece.dart';
 import '../theme/pk_tokens.dart';
 import 'puzzle_piece_tile.dart';
 
+abstract final class PuzzleBoardSurfaceTokens {
+  static const boardBorderWidth = 2.0;
+  static const slotDividerWidth = 1.0;
+  static const placedPieceInset = 4.0;
+  static const slotNumberFontSize = 28.0;
+}
+
 class PuzzleBoard extends StatelessWidget {
   const PuzzleBoard({
     super.key,
@@ -54,13 +61,19 @@ class PuzzleBoard extends StatelessWidget {
               child: SizedBox.expand(
                 key: const Key('puzzle-board'),
                 child: DecoratedBox(
+                  key: const Key('puzzle-board-surface'),
                   decoration: BoxDecoration(
                     color: colors.surface,
-                    border: Border.all(color: colors.outline, width: 4),
+                    border: Border.all(
+                      color: colors.outline.withValues(alpha: 0.72),
+                      width: PuzzleBoardSurfaceTokens.boardBorderWidth,
+                    ),
                     borderRadius: BorderRadius.circular(radius.board),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(radius.board - 4),
+                    borderRadius: BorderRadius.circular(
+                      radius.board - PuzzleBoardSurfaceTokens.boardBorderWidth,
+                    ),
                     child: Stack(
                       children: [
                         for (var row = 0; row < grid.rows; row += 1)
@@ -83,10 +96,17 @@ class PuzzleBoard extends StatelessWidget {
                             Positioned(
                               key: Key('puzzle-placed-piece-${piece.id}'),
                               left:
-                                  piece.correctPosition.column * cellWidth + 6,
-                              top: piece.correctPosition.row * cellHeight + 6,
-                              width: cellWidth - 12,
-                              height: cellHeight - 12,
+                                  piece.correctPosition.column * cellWidth +
+                                  PuzzleBoardSurfaceTokens.placedPieceInset,
+                              top:
+                                  piece.correctPosition.row * cellHeight +
+                                  PuzzleBoardSurfaceTokens.placedPieceInset,
+                              width:
+                                  cellWidth -
+                                  PuzzleBoardSurfaceTokens.placedPieceInset * 2,
+                              height:
+                                  cellHeight -
+                                  PuzzleBoardSurfaceTokens.placedPieceInset * 2,
                               child: PuzzlePieceTile(
                                 piece: piece,
                                 totalPieces: pieces.length,
@@ -135,22 +155,26 @@ class _Slot extends StatelessWidget {
       width: width,
       height: height,
       child: Semantics(
+        container: true,
         label: 'Espacio ${index + 1}',
         child: Container(
           key: Key('puzzle-slot-$index'),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: index.isEven
-                ? colors.surfaceAlt.withValues(alpha: 0.45)
-                : colors.secondary.withValues(alpha: 0.18),
-            border: Border.all(color: colors.outline, width: 2),
+                ? colors.surfaceAlt.withValues(alpha: 0.32)
+                : colors.secondary.withValues(alpha: 0.10),
+            border: Border.all(
+              color: colors.outline.withValues(alpha: 0.36),
+              width: PuzzleBoardSurfaceTokens.slotDividerWidth,
+            ),
           ),
           child: Text(
             '${index + 1}',
             style: TextStyle(
-              color: colors.outline.withValues(alpha: 0.72),
-              fontSize: 34,
-              fontWeight: FontWeight.w900,
+              color: colors.outline.withValues(alpha: 0.56),
+              fontSize: PuzzleBoardSurfaceTokens.slotNumberFontSize,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),

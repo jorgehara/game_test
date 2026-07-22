@@ -14,6 +14,7 @@ import 'package:puzzle_kids/routes/app_routes.dart';
 import 'package:puzzle_kids/screens/puzzle_game_screen.dart';
 import 'package:puzzle_kids/services/asset_manifest_validator.dart';
 import 'package:puzzle_kids/widgets/completion_dialog.dart';
+import 'package:puzzle_kids/widgets/puzzle_piece_shape.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -243,6 +244,55 @@ void main() {
     expect(find.byKey(const Key('completion-dialog')), findsNothing);
   });
 
+  testWidgets('completed tray stays intentional and does not collapse', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    for (final piece in provider.pieces) {
+      provider.placePiece(piece.id);
+    }
+
+    await _pumpGame(tester, provider: provider);
+
+    expect(provider.isCompleted, isTrue);
+    expect(find.byKey(const Key('puzzle-tray-complete')), findsOneWidget);
+    expect(find.byKey(const Key('puzzle-tray')), findsNothing);
+
+    final boardRect = tester.getRect(find.byKey(const Key('puzzle-board')));
+    final trayRect = tester.getRect(
+      find.byKey(const Key('puzzle-tray-complete')),
+    );
+
+    expect(trayRect.width, greaterThanOrEqualTo(240));
+    expect(trayRect.height, greaterThanOrEqualTo(96));
+    expect(trayRect.width / trayRect.height, greaterThan(1.5));
+    expect(boardRect.overlaps(trayRect), isFalse);
+  });
+
+  testWidgets('empty incomplete tray keeps stable landscape constraints', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    for (final piece in provider.pieces.take(3)) {
+      provider.placePiece(piece.id);
+    }
+
+    await _pumpGame(tester, provider: provider);
+
+    expect(find.byKey(const Key('puzzle-tray')), findsOneWidget);
+    expect(find.byKey(const Key('puzzle-piece-lion_1_1')), findsOneWidget);
+
+    final trayRect = tester.getRect(find.byKey(const Key('puzzle-tray')));
+    expect(trayRect.width, greaterThanOrEqualTo(240));
+    expect(trayRect.height, greaterThanOrEqualTo(240));
+  });
+
   testWidgets('completion dialog uses reduced motion fallback', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -367,6 +417,39 @@ void main() {
       find.byKey(const Key('puzzle-dragging-piece-castillo-princesa_0_1')),
       findsOneWidget,
     );
+    expect(
+      find.descendant(
+        of: find.byKey(
+          const Key('puzzle-dragging-piece-castillo-princesa_0_1'),
+        ),
+        matching: find.byType(PuzzlePieceTile),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(
+          const Key('puzzle-dragging-piece-castillo-princesa_0_1'),
+        ),
+        matching: find.byType(ClipPath),
+      ),
+      findsOneWidget,
+    );
+
+    final shapedTiles = tester
+        .widgetList<PuzzlePieceTile>(find.byType(PuzzlePieceTile))
+        .where((tile) => tile.imageSource != null)
+        .toList(growable: false);
+    expect(shapedTiles, isNotEmpty);
+    expect(shapedTiles.map((tile) => tile.imageSource?.assetPath).toSet(), {
+      'assets/images/castles/castillo-princesa.webp',
+    });
+    expect(
+      tester
+          .widgetList<ClipPath>(find.byType(ClipPath))
+          .map((clip) => clip.clipper),
+      everyElement(isA<PuzzlePieceShapeClipper>()),
+    );
 
     await gesture.up();
     await tester.pumpAndSettle();
@@ -452,6 +535,7 @@ void main() {
     for (final path in [
       'lib/screens/puzzle_game_screen.dart',
       'lib/widgets/puzzle_board.dart',
+      'lib/widgets/puzzle_piece_shape.dart',
       'lib/widgets/puzzle_piece_tile.dart',
     ]) {
       final source = File(path).readAsStringSync();

@@ -8,6 +8,7 @@ import 'package:puzzle_kids/models/puzzle_category.dart';
 import 'package:puzzle_kids/models/puzzle_difficulty.dart';
 import 'package:puzzle_kids/models/puzzle_piece.dart';
 import 'package:puzzle_kids/widgets/puzzle_board.dart';
+import 'package:puzzle_kids/widgets/puzzle_piece_shape.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_tile.dart';
 
 void main() {
@@ -125,6 +126,98 @@ void main() {
       expect(find.text('2'), findsWidgets);
       expect(find.byType(Image), findsNothing);
     });
+
+    testWidgets('uses lightweight tokenized board and slot hierarchy', (
+      tester,
+    ) async {
+      final grid = GridSpec(rows: 3, columns: 3);
+      final pieces = _pieces(grid);
+
+      await tester.pumpWidget(
+        _host(
+          PuzzleBoard(
+            puzzle: _puzzle(grid),
+            pieces: pieces,
+            placedPositions: {pieces.first.id: pieces.first.correctPosition},
+          ),
+        ),
+      );
+
+      final boardDecoration =
+          tester
+                  .widget<DecoratedBox>(
+                    find.byKey(const Key('puzzle-board-surface')),
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(boardDecoration.border, isA<Border>());
+      expect((boardDecoration.border! as Border).top.width, 2);
+
+      final slotDecoration =
+          tester
+                  .widget<Container>(find.byKey(const Key('puzzle-slot-1')))
+                  .decoration
+              as BoxDecoration;
+      expect(slotDecoration.border, isA<Border>());
+      expect((slotDecoration.border! as Border).top.width, 1);
+
+      final slotText = tester.widget<Text>(
+        find.descendant(
+          of: find.byKey(const Key('puzzle-slot-1')),
+          matching: find.text('2'),
+        ),
+      );
+      expect(slotText.style?.fontWeight, FontWeight.w700);
+      expect(slotText.style?.fontSize, lessThanOrEqualTo(28));
+
+      expect(find.byKey(const Key('puzzle-slot-1')), findsOneWidget);
+      expect(
+        tester.getRect(find.byKey(const Key('puzzle-placed-piece-piece-0-0'))),
+        isNot(tester.getRect(find.byKey(const Key('puzzle-slot-0')))),
+      );
+    });
+
+    testWidgets('placed board pieces use the shared shaped tile renderer', (
+      tester,
+    ) async {
+      const source = PuzzlePieceImageSource(
+        assetPath: 'assets/images/castles/board-approved-castle.webp',
+        sourceWidth: 1024,
+        sourceHeight: 1024,
+      );
+      final grid = GridSpec(rows: 2, columns: 2);
+      final piece = _piece(
+        grid,
+        row: 0,
+        column: 0,
+        edges: const PuzzlePieceEdges(
+          top: PuzzlePieceEdge.flat,
+          right: PuzzlePieceEdge.tab,
+          bottom: PuzzlePieceEdge.blank,
+          left: PuzzlePieceEdge.flat,
+        ),
+      );
+
+      await tester.pumpWidget(
+        _host(
+          PuzzleBoard(
+            puzzle: _puzzle(grid),
+            pieces: [piece],
+            placedPositions: {piece.id: piece.correctPosition},
+            pieceImageSource: source,
+          ),
+        ),
+      );
+
+      expect(find.byType(PuzzlePieceTile), findsOneWidget);
+      expect(find.byKey(Key('puzzle-piece-shape-${piece.id}')), findsOneWidget);
+      expect(find.byType(ClipPath), findsOneWidget);
+      expect(
+        tester.widget<ClipPath>(find.byType(ClipPath)).clipper,
+        isA<PuzzlePieceShapeClipper>(),
+      );
+      expect(tester.widget<Image>(find.byType(Image)).image, isA<AssetImage>());
+    });
   });
 }
 
@@ -153,10 +246,16 @@ List<PuzzlePiece> _pieces(GridSpec grid) {
   ];
 }
 
-PuzzlePiece _piece(GridSpec grid, {required int row, required int column}) {
+PuzzlePiece _piece(
+  GridSpec grid, {
+  required int row,
+  required int column,
+  PuzzlePieceEdges edges = PuzzlePieceEdges.allFlat,
+}) {
   return PuzzlePiece(
     id: 'piece-$row-$column',
     correctPosition: GridPosition(row: row, column: column, grid: grid),
+    edges: edges,
     crop: NormalizedRect(
       left: column / grid.columns,
       top: row / grid.rows,

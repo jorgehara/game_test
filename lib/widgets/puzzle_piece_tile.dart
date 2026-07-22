@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/puzzle_piece.dart';
 import '../theme/pk_tokens.dart';
+import 'puzzle_piece_shape.dart';
 
 class PuzzlePieceImageSource {
   const PuzzlePieceImageSource({
@@ -46,43 +47,56 @@ class PuzzlePieceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final number = piece.correctIndex + 1;
     final colors = context.pkColors;
-    final radius = BorderRadius.circular(context.pkRadius.button);
     final fallback = _NumberedPieceFallback(number: number);
     final source = imageSource;
     final showImage = source != null && source.canRender && _supportsImageCrop;
+    final fillColor =
+        colors.piecePalette[piece.correctIndex % colors.piecePalette.length];
+    final borderColor = colors.onSurface;
 
     return Semantics(
       container: true,
       excludeSemantics: true,
       label: 'Pieza $number de $totalPieces',
-      child: Container(
+      child: SizedBox(
         width: expand ? double.infinity : 86,
         height: expand ? double.infinity : 86,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: colors
-              .piecePalette[piece.correctIndex % colors.piecePalette.length],
-          border: Border.all(color: colors.onSurface, width: 3),
-          borderRadius: radius,
-          boxShadow: [
-            BoxShadow(
-              color: colors.outline.withValues(alpha: 0.18),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+        child: CustomPaint(
+          key: Key('puzzle-piece-shape-${piece.id}'),
+          painter: PuzzlePieceShapePainter(
+            edges: piece.edges,
+            fillColor: fillColor,
+            borderColor: borderColor,
+            borderWidth: 3,
+            shadowColor: colors.outline.withValues(alpha: 0.18),
+            shadowBlurRadius: 4,
+            shadowOffset: const Offset(0, 2),
+          ),
+          foregroundPainter: PuzzlePieceShapePainter(
+            edges: piece.edges,
+            fillColor: fillColor,
+            borderColor: borderColor,
+            borderWidth: 3,
+            paintFill: false,
+          ),
+          child: ClipPath(
+            clipper: PuzzlePieceShapeClipper(edges: piece.edges),
+            child: ColoredBox(
+              color: fillColor,
+              child: Padding(
+                padding: const EdgeInsets.all(3),
+                child: showImage
+                    ? _PuzzlePieceImageCrop(
+                        key: Key('puzzle-piece-image-${piece.id}'),
+                        piece: piece,
+                        imageSource: source,
+                        loadingFallback: fallback,
+                      )
+                    : Center(child: fallback),
+              ),
             ),
-          ],
+          ),
         ),
-        child: showImage
-            ? ClipRRect(
-                borderRadius: radius,
-                child: _PuzzlePieceImageCrop(
-                  key: Key('puzzle-piece-image-${piece.id}'),
-                  piece: piece,
-                  imageSource: source,
-                  loadingFallback: fallback,
-                ),
-              )
-            : fallback,
       ),
     );
   }

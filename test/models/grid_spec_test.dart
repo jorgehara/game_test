@@ -11,10 +11,10 @@ void main() {
       expect(grid.pieceCount, 6);
     });
 
-    test('marks only 2x2 and 3x3 as MVP generation-supported', () {
+    test('marks only 1x1, 2x2, and 3x3 as generation-supported', () {
+      expect(GridSpec(rows: 1, columns: 1).isSupportedForGeneration, isTrue);
       expect(GridSpec(rows: 2, columns: 2).isSupportedForGeneration, isTrue);
       expect(GridSpec(rows: 3, columns: 3).isSupportedForGeneration, isTrue);
-      expect(GridSpec(rows: 1, columns: 1).isSupportedForGeneration, isFalse);
       expect(GridSpec(rows: 2, columns: 3).isSupportedForGeneration, isFalse);
     });
 

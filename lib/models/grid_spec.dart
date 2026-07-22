@@ -9,7 +9,9 @@ class GridSpec {
   int get pieceCount => rows * columns;
 
   bool get isSupportedForGeneration {
-    return (rows == 2 && columns == 2) || (rows == 3 && columns == 3);
+    return (rows == 1 && columns == 1) ||
+        (rows == 2 && columns == 2) ||
+        (rows == 3 && columns == 3);
   }
 
   static int _validatePositive(int value, String name) {

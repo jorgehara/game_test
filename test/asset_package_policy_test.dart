@@ -235,6 +235,20 @@ void main() {
         isFalse,
       );
     });
+
+    test('keeps the jigsaw renderer pure and offline-only', () {
+      final shapeSource = _read(root, 'lib/widgets/puzzle_piece_shape.dart');
+      final tileSource = _read(root, 'lib/widgets/puzzle_piece_tile.dart');
+
+      expect(shapeSource, isNot(contains('Random')));
+      expect(shapeSource, isNot(contains('DateTime')));
+      expect(shapeSource, isNot(contains('Timer')));
+      expect(shapeSource, isNot(contains('Image.')));
+      expect(shapeSource, isNot(contains('Network')));
+      expect(tileSource, contains('Image.asset'));
+      expect(tileSource, isNot(contains('Image.network')));
+      expect(tileSource, isNot(contains('NetworkImage')));
+    });
   });
 }
 
