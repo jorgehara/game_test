@@ -2,7 +2,7 @@ Puzzle Kids asset notice
 
 Android launcher icon: PROJECT-OWNED original vector artwork in assets/source/icon/puzzle-kids-icon.svg. No external artwork or copyrighted image asset was used.
 
-Puzzle starter pack: PROJECT-OWNED original vector artwork in assets/source/puzzles/*.svg, rasterized locally into assets/images/**/*.png by assets/source/puzzles/generate_project_owned_pack.py. No Pinterest assets, external downloads, third-party artwork, scraping, or hotlinks were used.
+Puzzle starter pack: PROJECT-OWNED original vector artwork in assets/source/puzzles/*.svg, rasterized locally into assets/images/**/*.png by assets/source/puzzles/generate_project_owned_pack.py. The current pack contains 9 full PNG images at 512x512 plus 9 PNG thumbnails at 256x256, totaling 52,639 bytes. No Pinterest assets, external downloads, third-party artwork, scraping, or hotlinks were used.
 
 The bundled assets/catalog/asset_licenses.json file is the approval ledger for the project-owned starter pack. Approved entries use exactly these fields: id, path, thumbnailPath, sourceTitle, sourceUrl, license, licenseUrl, attribution, approved, approvedBy, approvedAt, dimensions, format, bytes, and sha256. dimensions is a nested object containing width and height; the manifest does not use top-level width or height fields.
 

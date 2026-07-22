@@ -43,9 +43,11 @@ Catalog entries without approved local files must keep using the `PkImageTile` v
 
 ## Project-owned starter puzzle pack
 
-Slice 3 ships 9 offline PNG puzzle illustrations plus 9 thumbnails, all generated without Pinterest, downloads, scraping, or external rasterizers:
+Slice 3 ships 9 offline PNG puzzle illustrations plus 9 PNG thumbnails, all generated without Pinterest, downloads, scraping, or external rasterizers. Legal ownership: every entry is `PROJECT-OWNED`, sourced from editable local SVG under `assets/source/puzzles/`, approved by `Puzzle Kids project owner`, and attributed as Puzzle Kids original local vector artwork.
 
-| Theme | Source | Full | Thumbnail |
+Pack measurement from the current manifest and files: 9 full images at 512x512, 9 thumbnails at 256x256, PNG format, 52,639 bytes total image binaries. Full max is 4,580 bytes; thumbnail max is 1,950 bytes; all are below the full <=800 KiB, thumbnail <=80 KiB, and pack <4 MiB gates.
+
+| Theme | Source | Full PNG 512x512 | Thumbnail PNG 256x256 |
 |---|---|---|---|
 | castle-bright | `assets/source/puzzles/castle-bright.svg` | `assets/images/castles/castle-bright.png` | `assets/images/castles/castle-bright_thumb.png` |
 | princess-crown | `assets/source/puzzles/princess-crown.svg` | `assets/images/princesses/princess-crown.png` | `assets/images/princesses/princess-crown_thumb.png` |
@@ -69,26 +71,36 @@ The generator updates `assets/catalog/asset_licenses.json` with byte counts and 
 
 Run from the project root with the Flutter SDK configured in `android/local.properties` (`C:\src\flutter` locally):
 
+Current no-build gates:
+
 ```powershell
 & "C:\src\flutter\bin\dart.bat" format --set-exit-if-changed .
 & "C:\src\flutter\bin\flutter.bat" analyze
+& "C:\src\flutter\bin\flutter.bat" test test/asset_package_policy_test.dart test/services/asset_manifest_validator_test.dart test/services/puzzle_asset_manifest_loader_test.dart test/screens/puzzle_selection_screen_test.dart --reporter compact
 & "C:\src\flutter\bin\flutter.bat" test --reporter compact
-& "C:\src\flutter\bin\flutter.bat" test test/widgets/pk_theme_test.dart test/widgets/pk_adaptive_shell_test.dart test/screens/puzzle_selection_screen_test.dart test/screens/puzzle_game_screen_test.dart --reporter compact
+git diff --check
+```
+
+Future release build gates, to run only when release validation is requested:
+
+```powershell
 & "C:\src\flutter\bin\flutter.bat" build apk --release
 & "C:\src\flutter\bin\flutter.bat" build apk --release --split-per-abi
+& "C:\src\flutter\bin\flutter.bat" install --release
 ```
 
 Latest local evidence:
 
 | Gate | Result |
 |---|---|
-| Format | Passed: 62 files, 0 changed. |
+| Format | Passed: 63 files, 0 changed. |
 | Analyze | Passed: no issues found. |
-| Full tests | Passed: 107 tests. |
-| Focused asset runtime tests | Passed: loader + selection focused suite, 7 tests. |
+| Full tests | Passed: 109 tests. |
+| Focused asset/offline runtime tests | Passed: package policy + validator + loader + selection focused suite, 26 tests. |
 | Focused UX tests | Passed previously: theme, adaptive shell, selection, completion/onboarding/reduced-motion coverage. |
-| Release universal APK | Built, but above target: `app-release.apk` = 47,058,122 bytes / 44.88 MiB. |
-| Release split APKs | Passed target: armeabi-v7a 13.27 MiB, arm64-v8a 15.89 MiB, x86_64 17.22 MiB. |
+| Asset pack size | Passed: 52,639 bytes, 9 full PNGs + 9 PNG thumbnails. |
+| Release universal APK | Stale/pre-current-pack evidence only: `app-release.apk` = 47,058,122 bytes / 44.88 MiB. Do not claim this APK includes the current starter pack until rebuilt. |
+| Release split APKs | Stale/pre-current-pack evidence only: armeabi-v7a 13.27 MiB, arm64-v8a 15.89 MiB, x86_64 17.22 MiB. Do not claim these split APKs include the current starter pack until rebuilt. |
 
 Package notes:
 
