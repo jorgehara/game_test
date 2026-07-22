@@ -12,7 +12,7 @@ Puzzle images must be local, offline, and approved before UI can render them as 
 
 Manifest entries live in `assets/catalog/asset_licenses.json` and must include exactly these fields: `id`, `path`, `thumbnailPath`, `sourceTitle`, `sourceUrl`, `license`, `licenseUrl`, `attribution`, `approved`, `approvedBy`, `approvedAt`, `dimensions`, `format`, `bytes`, and `sha256`. `dimensions` is a nested object with `width` and `height`; the manifest does not use top-level `width` or `height` fields. `origin` is not a manifest field. Approved entries must point to an existing local file under `assets/images/` and pass `AssetManifestValidator` policy: PNG/WebP only, no path traversal/external URLs, max 2048px dimension, max 800 KiB per full image, and 256x256 thumbnails when `thumbnailPath` is present.
 
-The bundled starter pack is PROJECT-OWNED artwork generated locally from editable SVG sources under `assets/source/puzzles/` by `assets/source/puzzles/generate_project_owned_pack.py`. The generator uses local Python/SVG source owned by this project and is reproducible without network, downloads, Pinterest images, or external rasterizers. Every approved entry uses `license: "PROJECT-OWNED"`, `sourceUrl: "project-owned://..."`, explicit Puzzle Kids attribution, measured local PNG metadata, and SHA-256 hashes.
+The bundled starter pack is PROJECT-OWNED artwork generated locally from editable SVG sources under `assets/source/puzzles/` by `assets/source/puzzles/generate_project_owned_pack.py`, plus the user-provided original `assets/images/castillo-princesa.png` optimized offline into WebP. The atlas pack is derived from the user-owned local source `assets/images/varios-assets.png` after the project owner confirmed ownership and authorized use/publication on 2026-07-22. The generator, optimization workflow, and offline atlas extraction pipeline use local project/user-owned source only and are reproducible without network, downloads, Pinterest images, or external rasterizers. Every approved entry uses `license: "PROJECT-OWNED"`, `sourceUrl: "project-owned://..."`, explicit Puzzle Kids attribution, measured local PNG/WebP metadata, and SHA-256 hashes.
 
 Legal example once a local file exists:
 
@@ -43,13 +43,14 @@ Catalog entries without approved local files must keep using the `PkImageTile` v
 
 ## Project-owned starter puzzle pack
 
-Slice 3 ships 9 offline PNG puzzle illustrations plus 9 PNG thumbnails, all generated without Pinterest, downloads, scraping, or external rasterizers. Legal ownership: every entry is `PROJECT-OWNED`, sourced from editable local SVG under `assets/source/puzzles/`, approved by `Puzzle Kids project owner`, and attributed as Puzzle Kids original local vector artwork.
+Slice 3 ships 9 offline PNG puzzle illustrations plus 9 PNG thumbnails, all generated without Pinterest, downloads, scraping, or external rasterizers. Slice 1 of `puzzle-image-piece-rendering` adds 1 user-provided PROJECT-OWNED WebP puzzle plus WebP thumbnail, optimized offline from `assets/images/castillo-princesa.png`. Slice 3 of `puzzle-kids-atlas-assets` adds 9 atlas-derived full WebP puzzle images plus 9 WebP thumbnails extracted offline from explicit crop boxes in `assets/source/puzzles/atlas_crop_metadata.json`. Legal ownership: every entry is `PROJECT-OWNED`, sourced from editable local SVG under `assets/source/puzzles/`, user-owned local originals, or the approved user-owned atlas, approved by `Puzzle Kids project owner`, and attributed as Puzzle Kids original/local artwork.
 
-Pack measurement from the current manifest and files: 9 full images at 512x512, 9 thumbnails at 256x256, PNG format, 52,639 bytes total image binaries. Full max is 4,580 bytes; thumbnail max is 1,950 bytes; all are below the full <=800 KiB, thumbnail <=80 KiB, and pack <4 MiB gates.
+Pack measurement from the current manifest and files: 19 full images, 19 thumbnails at 256x256, PNG/WebP format, 1,231,513 bytes total image binaries. The atlas subset contains exactly 9 full WebP images totaling 858,126 bytes and 9 WebP thumbnails totaling 174,656 bytes; max atlas full image is 117,614 bytes and max atlas thumbnail is 23,930 bytes. The optimized `castillo-princesa` full asset is 1024x1024, 131,770 bytes, SHA-256 `92b69c509f6baac96d9348dea093259dcb4d058eefad6186e1db97277c9929fc`; its thumbnail is 256x256, 14,322 bytes, SHA-256 `8e446f9f0b86fd8a784ba8ef440b67deb53c6f6f64c4a1e7db611ad646cfd872`. Full max is 131,770 bytes; thumbnail max is 23,930 bytes; all are below the full <=800 KiB, thumbnail <=80 KiB, and pack <4 MiB gates. Original atlas is not bundled, not declared in `pubspec.yaml`, and not listed as a catalog puzzle path.
 
 | Theme | Source | Full PNG 512x512 | Thumbnail PNG 256x256 |
 |---|---|---|---|
 | castle-bright | `assets/source/puzzles/castle-bright.svg` | `assets/images/castles/castle-bright.png` | `assets/images/castles/castle-bright_thumb.png` |
+| castillo-princesa | `assets/images/castillo-princesa.png` | `assets/images/castles/castillo-princesa.webp` (1024x1024 WebP) | `assets/images/castles/castillo-princesa_thumb.webp` |
 | princess-crown | `assets/source/puzzles/princess-crown.svg` | `assets/images/princesses/princess-crown.png` | `assets/images/princesses/princess-crown_thumb.png` |
 | unicorn-cloud | `assets/source/puzzles/unicorn-cloud.svg` | `assets/images/unicorns/unicorn-cloud.png` | `assets/images/unicorns/unicorn-cloud_thumb.png` |
 | dragon-kite | `assets/source/puzzles/dragon-kite.svg` | `assets/images/dinosaurs/dragon-kite.png` | `assets/images/dinosaurs/dragon-kite_thumb.png` |
@@ -58,6 +59,15 @@ Pack measurement from the current manifest and files: 9 full images at 512x512, 
 | fox-forest | `assets/source/puzzles/fox-forest.svg` | `assets/images/animals/fox-forest.png` | `assets/images/animals/fox-forest_thumb.png` |
 | rainbow-bus | `assets/source/puzzles/rainbow-bus.svg` | `assets/images/vehicles/rainbow-bus.png` | `assets/images/vehicles/rainbow-bus_thumb.png` |
 | berry-cupcake | `assets/source/puzzles/berry-cupcake.svg` | `assets/images/fruits/berry-cupcake.png` | `assets/images/fruits/berry-cupcake_thumb.png` |
+| atlas-dinosaurs | `project-owned://assets/images/varios-assets.png` crop `[46,0,420,374]` | `assets/images/dinosaurs/atlas-dinosaurs.webp` (1024x1024 WebP) | `assets/images/dinosaurs/atlas-dinosaurs_thumb.webp` |
+| atlas-race-car | `project-owned://assets/images/varios-assets.png` crop `[513,0,887,374]` | `assets/images/vehicles/atlas-race-car.webp` (1024x1024 WebP) | `assets/images/vehicles/atlas-race-car_thumb.webp` |
+| atlas-princess-castle | `project-owned://assets/images/varios-assets.png` crop `[981,0,1355,374]` | `assets/images/castles/atlas-princess-castle.webp` (1024x1024 WebP) | `assets/images/castles/atlas-princess-castle_thumb.webp` |
+| atlas-doctor | `project-owned://assets/images/varios-assets.png` crop `[46,374,420,748]` | `assets/images/professions/atlas-doctor.webp` (1024x1024 WebP) | `assets/images/professions/atlas-doctor_thumb.webp` |
+| atlas-astronaut | `project-owned://assets/images/varios-assets.png` crop `[513,374,887,748]` | `assets/images/space/atlas-astronaut.webp` (1024x1024 WebP) | `assets/images/space/atlas-astronaut_thumb.webp` |
+| atlas-animals | `project-owned://assets/images/varios-assets.png` crop `[981,374,1355,748]` | `assets/images/animals/atlas-animals.webp` (1024x1024 WebP) | `assets/images/animals/atlas-animals_thumb.webp` |
+| atlas-airplane | `project-owned://assets/images/varios-assets.png` crop `[46,748,420,1122]` | `assets/images/vehicles/atlas-airplane.webp` (1024x1024 WebP) | `assets/images/vehicles/atlas-airplane_thumb.webp` |
+| atlas-truck | `project-owned://assets/images/varios-assets.png` crop `[513,748,887,1122]` | `assets/images/vehicles/atlas-truck.webp` (1024x1024 WebP) | `assets/images/vehicles/atlas-truck_thumb.webp` |
+| atlas-emergency-vehicles | `project-owned://assets/images/varios-assets.png` crop `[981,748,1355,1122]` | `assets/images/vehicles/atlas-emergency-vehicles.webp` (1024x1024 WebP) | `assets/images/vehicles/atlas-emergency-vehicles_thumb.webp` |
 
 Regenerate locally with:
 
@@ -65,7 +75,15 @@ Regenerate locally with:
 python assets\source\puzzles\generate_project_owned_pack.py
 ```
 
-The generator updates `assets/catalog/asset_licenses.json` with byte counts and SHA-256 hashes from actual files.
+The generator updates generated SVG-derived entries in `assets/catalog/asset_licenses.json` with byte counts and SHA-256 hashes from actual files. User-provided optimized art entries must keep their measured WebP bytes, dimensions, and SHA-256 in the manifest.
+
+Regenerate atlas derivatives locally only after confirming the source atlas is present and approved:
+
+```powershell
+python assets\source\puzzles\extract_atlas_assets.py
+```
+
+`assets/source/puzzles/atlas_crop_metadata.json` is the audit ledger for the atlas source SHA-256, 1402x1122 source dimensions, panel boxes, crop boxes, generated bytes, dimensions, and hashes. Keep `assets/images/varios-assets.png` as a local staging input only; the guard is that it must never be staged, bundled in `pubspec.yaml`, or referenced as a generated asset path. Original atlas is not bundled.
 
 ## Release validation evidence
 
@@ -98,14 +116,14 @@ Latest local evidence:
 | Full tests | Passed: 109 tests. |
 | Focused asset/offline runtime tests | Passed: package policy + validator + loader + selection focused suite, 26 tests. |
 | Focused UX tests | Passed previously: theme, adaptive shell, selection, completion/onboarding/reduced-motion coverage. |
-| Asset pack size | Passed: 52,639 bytes, 9 full PNGs + 9 PNG thumbnails. |
+| Asset pack size | Passed: 1,231,513 bytes, 9 full PNGs + 9 PNG thumbnails + 1 optimized WebP + 1 WebP thumbnail + 9 atlas WebP full images + 9 atlas WebP thumbnails. |
 | Release universal APK | Stale/pre-current-pack evidence only: `app-release.apk` = 47,058,122 bytes / 44.88 MiB. Do not claim this APK includes the current starter pack until rebuilt. |
 | Release split APKs | Stale/pre-current-pack evidence only: armeabi-v7a 13.27 MiB, arm64-v8a 15.89 MiB, x86_64 17.22 MiB. Do not claim these split APKs include the current starter pack until rebuilt. |
 
 Package notes:
 
 - Release `android/app/src/main/AndroidManifest.xml` declares no `INTERNET` permission; debug/profile manifests keep Flutter development `INTERNET` only for tooling.
-- `pubspec.yaml` declares `assets/catalog/` and `assets/images/`; the current project-owned starter image pack is intentionally small and locally validated.
+- `pubspec.yaml` declares `assets/catalog/`, `assets/images/`, and explicit `castillo-princesa` WebP assets; the current project-owned starter image pack is intentionally small and locally validated.
 - Runtime image rendering uses `Image.asset` only for approved local paths and falls back locally on missing assets; code search found no `Image.network`, `NetworkImage`, or full-catalog `precacheImage` usage.
 - Release APK contents are dominated by Flutter native libraries; universal APK groups measured: `lib` 44.03 MiB, `assets` 0.14 MiB, `classes` 0.82 MiB. Use split-per-ABI artifacts for the current APK-size gate until app-bundle/play delivery is introduced.
 - RAM, startup, and 60fps/frame pacing were not measured in this local validation because no representative Android device/emulator profiling run was performed. They remain release-blocking gates before production declaration.

@@ -12,12 +12,14 @@ class PuzzleBoard extends StatelessWidget {
     required this.puzzle,
     required this.pieces,
     required this.placedPositions,
+    this.pieceImageSource,
     this.boardMeasurementKey,
   });
 
   final Puzzle puzzle;
   final List<PuzzlePiece> pieces;
   final Map<String, GridPosition> placedPositions;
+  final PuzzlePieceImageSource? pieceImageSource;
   final GlobalKey? boardMeasurementKey;
 
   @override
@@ -88,6 +90,7 @@ class PuzzleBoard extends StatelessWidget {
                               child: PuzzlePieceTile(
                                 piece: piece,
                                 totalPieces: pieces.length,
+                                imageSource: pieceImageSource,
                                 expand: true,
                               ),
                             ),

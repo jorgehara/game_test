@@ -8,7 +8,8 @@ enum PuzzleCategory {
   castles('castles', 'Castillos'),
   princesses('princesses', 'Princesas'),
   unicorns('unicorns', 'Unicornios'),
-  ocean('ocean', 'Océano');
+  ocean('ocean', 'Océano'),
+  professions('professions', 'Profesiones');
 
   const PuzzleCategory(this.id, this.label);
 

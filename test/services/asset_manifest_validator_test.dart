@@ -553,7 +553,7 @@ void main() {
             .map(AssetManifestEntry.fromJson)
             .toList(growable: false);
 
-        expect(entries, hasLength(9));
+        expect(entries, hasLength(19));
         expect(entries.every((entry) => entry.approved), isTrue);
         expect(
           entries.every((entry) => entry.license == 'PROJECT-OWNED'),
@@ -571,62 +571,168 @@ void main() {
             entries,
             existingAssetPaths: _localImagePaths(),
           ),
-          hasLength(9),
+          hasLength(19),
         );
       },
     );
 
+    test('approves exactly 19 project-owned local bundled assets', () async {
+      final entries = _readBundledManifest();
+      final approved = entries.where((entry) => entry.approved).toList();
+      final existingPaths = _localImagePaths();
+      final catalogPaths = _readCatalogPaths();
+      final pubspecAssets = _readPubspecAssets();
+
+      expect(approved, hasLength(19));
+      expect(approved.map((entry) => entry.id), isA<Iterable<String>>());
+      expect(
+        approved.map((entry) => entry.id).toSet(),
+        containsAll([
+          'castle-bright',
+          'castillo-princesa',
+          'princess-crown',
+          'unicorn-cloud',
+        ]),
+      );
+      expect(
+        approved.every((entry) => entry.license == 'PROJECT-OWNED'),
+        isTrue,
+      );
+      expect(
+        approved.every((entry) => entry.attribution.contains('Puzzle Kids')),
+        isTrue,
+      );
+      expect(
+        approved.expand((entry) => [entry.path, entry.thumbnailPath]).nonNulls,
+        everyElement(isIn(existingPaths)),
+      );
+
+      expect(
+        AssetManifestValidator.validateEntries(
+          entries,
+          existingAssetPaths: existingPaths,
+        ),
+        isEmpty,
+      );
+      expect(
+        await AssetManifestValidator.validateEntriesWithProbe(
+          entries,
+          const LocalAssetProbe(),
+        ),
+        isEmpty,
+      );
+      expect(
+        AssetManifestValidator.validateCatalogAndPubspec(
+          entries: entries,
+          catalogPaths: catalogPaths,
+          pubspecAssets: pubspecAssets,
+        ),
+        isEmpty,
+      );
+    });
+
     test(
-      'approves exactly 9 project-owned local starter pack assets',
+      'records approved atlas manifest metadata from crop metadata',
       () async {
         final entries = _readBundledManifest();
-        final approved = entries.where((entry) => entry.approved).toList();
+        final atlas = entries
+            .where((entry) => entry.id.startsWith('atlas-'))
+            .toList(growable: false);
+        final metadataFile = File(
+          'assets/source/puzzles/atlas_crop_metadata.json',
+        );
+        final metadata =
+            jsonDecode(metadataFile.readAsStringSync()) as Map<String, Object?>;
+        final outputs = (metadata['outputs'] as List<Object?>)
+            .cast<Map<String, Object?>>();
         final existingPaths = _localImagePaths();
-        final catalogPaths = _readCatalogPaths();
-        final pubspecAssets = _readPubspecAssets();
 
-        expect(approved, hasLength(9));
-        expect(approved.map((entry) => entry.id), isA<Iterable<String>>());
+        expect(atlas, hasLength(9));
+        expect(atlas.every((entry) => entry.approved), isTrue);
         expect(
-          approved.map((entry) => entry.id).toSet(),
-          containsAll(['castle-bright', 'princess-crown', 'unicorn-cloud']),
-        );
-        expect(
-          approved.every((entry) => entry.license == 'PROJECT-OWNED'),
+          atlas.every((entry) => entry.license == 'PROJECT-OWNED'),
           isTrue,
         );
         expect(
-          approved.every((entry) => entry.attribution.contains('Puzzle Kids')),
+          atlas.every(
+            (entry) =>
+                entry.sourceUrl ==
+                'project-owned://assets/images/varios-assets.png',
+          ),
           isTrue,
         );
-        expect(
-          approved
-              .expand((entry) => [entry.path, entry.thumbnailPath])
-              .nonNulls,
-          everyElement(isIn(existingPaths)),
-        );
+        expect(atlas.every((entry) => entry.sha256.length == 64), isTrue);
+
+        for (final output in outputs) {
+          final entry = atlas.singleWhere((entry) => entry.id == output['id']);
+          final full = output['full'] as Map<String, Object?>;
+          final thumbnail = output['thumbnail'] as Map<String, Object?>;
+
+          expect(entry.path, full['path']);
+          expect(entry.thumbnailPath, thumbnail['path']);
+          expect(entry.width, full['width']);
+          expect(entry.height, full['height']);
+          expect(entry.bytes, full['bytes']);
+          expect(entry.sha256, full['sha256']);
+          expect(entry.format, 'webp');
+        }
 
         expect(
           AssetManifestValidator.validateEntries(
-            entries,
+            atlas,
             existingAssetPaths: existingPaths,
           ),
           isEmpty,
         );
         expect(
           await AssetManifestValidator.validateEntriesWithProbe(
-            entries,
+            atlas,
             const LocalAssetProbe(),
           ),
           isEmpty,
         );
+      },
+    );
+
+    test(
+      'records exact optimized castillo-princesa manifest metadata',
+      () async {
+        final entries = _readBundledManifest();
+        final castillo = entries.singleWhere(
+          (entry) => entry.id == 'castillo-princesa',
+        );
+        const thumbnailPath =
+            'assets/images/castles/castillo-princesa_thumb.webp';
+
+        expect(castillo.path, 'assets/images/castles/castillo-princesa.webp');
+        expect(castillo.thumbnailPath, thumbnailPath);
+        expect(castillo.license, 'PROJECT-OWNED');
         expect(
-          AssetManifestValidator.validateCatalogAndPubspec(
-            entries: entries,
-            catalogPaths: catalogPaths,
-            pubspecAssets: pubspecAssets,
-          ),
-          isEmpty,
+          castillo.sourceUrl,
+          'project-owned://assets/images/castillo-princesa.png',
+        );
+        expect(castillo.format, 'webp');
+        expect(castillo.width, 1024);
+        expect(castillo.height, 1024);
+        expect(castillo.bytes, 131770);
+        expect(
+          castillo.sha256,
+          '92b69c509f6baac96d9348dea093259dcb4d058eefad6186e1db97277c9929fc',
+        );
+
+        final fullProbe = await const LocalAssetProbe().probe(castillo.path);
+        final thumbProbe = await const LocalAssetProbe().probe(thumbnailPath);
+        expect(fullProbe.bytes, lessThanOrEqualTo(800 * 1024));
+        expect(fullProbe.width, 1024);
+        expect(fullProbe.height, 1024);
+        expect(fullProbe.sha256, castillo.sha256);
+        expect(thumbProbe.bytes, 14322);
+        expect(thumbProbe.bytes, lessThanOrEqualTo(80 * 1024));
+        expect(thumbProbe.width, 256);
+        expect(thumbProbe.height, 256);
+        expect(
+          thumbProbe.sha256,
+          '8e446f9f0b86fd8a784ba8ef440b67deb53c6f6f64c4a1e7db611ad646cfd872',
         );
       },
     );

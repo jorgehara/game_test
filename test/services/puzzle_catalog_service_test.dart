@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:puzzle_kids/models/grid_spec.dart';
 import 'package:puzzle_kids/models/puzzle.dart';
@@ -144,9 +147,10 @@ void main() {
       );
     });
 
-    test('integrates the 9 project-owned starter pack puzzles', () {
+    test('integrates the 10 project-owned starter pack puzzles', () {
       final starterIds = {
         'castle-bright',
+        'castillo-princesa',
         'princess-crown',
         'unicorn-cloud',
         'dragon-kite',
@@ -160,7 +164,7 @@ void main() {
           .where((puzzle) => starterIds.contains(puzzle.id))
           .toList(growable: false);
 
-      expect(starterPack, hasLength(9));
+      expect(starterPack, hasLength(10));
       expect(starterPack.map((puzzle) => puzzle.id).toSet(), starterIds);
       expect(
         starterPack.map((puzzle) => puzzle.category).toSet(),
@@ -176,16 +180,101 @@ void main() {
           PuzzleCategory.ocean,
         ]),
       );
-      expect(
-        starterPack.every((puzzle) => puzzle.imagePath.endsWith('.png')),
-        isTrue,
+      final castillo = starterPack.singleWhere(
+        (puzzle) => puzzle.id == 'castillo-princesa',
       );
       expect(
-        starterPack.every(
-          (puzzle) => puzzle.thumbnailPath.endsWith('_thumb.png'),
+        castillo.imagePath,
+        'assets/images/castles/castillo-princesa.webp',
+      );
+      expect(
+        castillo.thumbnailPath,
+        'assets/images/castles/castillo-princesa_thumb.webp',
+      );
+      expect(
+        starterPack
+            .where((puzzle) => puzzle.id != 'castillo-princesa')
+            .every((puzzle) => puzzle.imagePath.endsWith('.png')),
+        isTrue,
+      );
+    });
+
+    test('integrates the 9 atlas WebP puzzles with stable metadata', () {
+      final atlasIds = {
+        'atlas-dinosaurs',
+        'atlas-race-car',
+        'atlas-princess-castle',
+        'atlas-doctor',
+        'atlas-astronaut',
+        'atlas-animals',
+        'atlas-airplane',
+        'atlas-truck',
+        'atlas-emergency-vehicles',
+      };
+      final atlasPuzzles = PuzzleCatalogService.all()
+          .where((puzzle) => atlasIds.contains(puzzle.id))
+          .toList(growable: false);
+
+      expect(atlasPuzzles, hasLength(9));
+      expect(atlasPuzzles.map((puzzle) => puzzle.id).toSet(), atlasIds);
+      expect(
+        atlasPuzzles.every(
+          (puzzle) =>
+              puzzle.imagePath.endsWith('.webp') &&
+              puzzle.thumbnailPath.endsWith('_thumb.webp'),
         ),
         isTrue,
       );
+      expect(
+        atlasPuzzles.every(
+          (puzzle) =>
+              puzzle.grid.rows == puzzle.grid.columns &&
+              (puzzle.grid.rows == 2 || puzzle.grid.rows == 3),
+        ),
+        isTrue,
+      );
+
+      final doctor = atlasPuzzles.singleWhere(
+        (puzzle) => puzzle.id == 'atlas-doctor',
+      );
+      expect(doctor.category, PuzzleCategory.professions);
+      expect(doctor.imagePath, 'assets/images/professions/atlas-doctor.webp');
+      expect(
+        doctor.thumbnailPath,
+        'assets/images/professions/atlas-doctor_thumb.webp',
+      );
+
+      final level4Ids = atlasPuzzles
+          .where((puzzle) => puzzle.difficulty.level == 4)
+          .map((puzzle) => puzzle.id)
+          .toSet();
+      expect(level4Ids, {
+        'atlas-dinosaurs',
+        'atlas-race-car',
+        'atlas-astronaut',
+        'atlas-emergency-vehicles',
+      });
+    });
+
+    test('resolves atlas puzzles to approved local manifest assets', () {
+      final entries = _readManifest();
+      final existingPaths = _localImagePaths();
+      final atlasPuzzles = PuzzleCatalogService.all()
+          .where((puzzle) => puzzle.id.startsWith('atlas-'))
+          .toList(growable: false);
+
+      expect(atlasPuzzles, hasLength(9));
+      for (final puzzle in atlasPuzzles) {
+        final approved = PuzzleCatalogService.approvedAssetFor(
+          puzzle,
+          entries,
+          existingAssetPaths: existingPaths,
+        );
+
+        expect(approved, isNotNull, reason: puzzle.id);
+        expect(approved!.path, puzzle.imagePath);
+        expect(approved.thumbnailPath, puzzle.thumbnailPath);
+      }
     });
 
     test(
@@ -213,6 +302,27 @@ void main() {
       },
     );
   });
+}
+
+List<AssetManifestEntry> _readManifest() {
+  final decoded =
+      jsonDecode(File('assets/catalog/asset_licenses.json').readAsStringSync())
+          as List<Object?>;
+  return decoded
+      .cast<Map<String, Object?>>()
+      .map(AssetManifestEntry.fromJson)
+      .toList(growable: false);
+}
+
+Set<String> _localImagePaths() {
+  final imageRoot = Directory('assets/images');
+  if (!imageRoot.existsSync()) return const {};
+  return imageRoot
+      .listSync(recursive: true)
+      .whereType<File>()
+      .map((file) => file.path.replaceAll('\\', '/'))
+      .where((path) => path.endsWith('.png') || path.endsWith('.webp'))
+      .toSet();
 }
 
 Puzzle _validPuzzle({

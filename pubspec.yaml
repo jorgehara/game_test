@@ -63,6 +63,8 @@ flutter:
   assets:
     - assets/catalog/
     - assets/images/
+    - assets/images/castles/castillo-princesa.webp
+    - assets/images/castles/castillo-princesa_thumb.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

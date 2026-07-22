@@ -27,6 +27,7 @@ void main() {
     final semantics = tester.ensureSemantics();
 
     await _pumpSelection(tester);
+    await _scrollUntilVisible(tester, 'Castillo brillante');
 
     expect(find.text('Elegí tu puzzle'), findsOneWidget);
     expect(find.text('Castillo brillante'), findsOneWidget);
@@ -37,11 +38,9 @@ void main() {
       find.bySemanticsLabel('Imagen segura de Castillo brillante'),
       findsOneWidget,
     );
-    final starterImage = tester.widget<Image>(find.byType(Image).first);
-    final starterImageProvider = starterImage.image as ResizeImage;
     expect(
-      (starterImageProvider.imageProvider as AssetImage).assetName,
-      'assets/images/castles/castle-bright_thumb.png',
+      _visibleAssetImageNames(tester),
+      contains('assets/images/castles/castle-bright_thumb.png'),
     );
 
     final playButton = find.widgetWithText(
@@ -60,6 +59,7 @@ void main() {
     final provider = PuzzleGameProvider();
 
     await _pumpSelection(tester, provider: provider);
+    await _scrollUntilVisible(tester, 'Jugar Castillo brillante');
     await tester.tap(
       find.widgetWithText(FilledButton, 'Jugar Castillo brillante'),
     );
@@ -85,6 +85,7 @@ void main() {
         'assets/images/castles/not-in-catalog_thumb.png',
       },
     );
+    await _scrollUntilVisible(tester, 'Castillo brillante');
 
     expect(find.text('Castillo brillante'), findsOneWidget);
     expect(
@@ -101,6 +102,7 @@ void main() {
       tester,
       assetBundle: _ManifestAssetBundle(loadError: 'loader failed'),
     );
+    await _scrollUntilVisible(tester, 'Castillo brillante');
 
     expect(find.text('Elegí tu puzzle'), findsOneWidget);
     expect(find.text('Castillo brillante'), findsOneWidget);
@@ -121,14 +123,79 @@ void main() {
         ]),
       ),
     );
+    await _scrollUntilVisible(tester, 'Castillo brillante');
 
-    final image = tester.widget<Image>(find.byType(Image).first);
-    final imageProvider = image.image as ResizeImage;
     expect(
-      (imageProvider.imageProvider as AssetImage).assetName,
-      'assets/images/castles/castle-bright_thumb.png',
+      _visibleAssetImageNames(tester),
+      contains('assets/images/castles/castle-bright_thumb.png'),
     );
   });
+
+  testWidgets('loads atlas thumbnails from approved bundled manifest entries', (
+    tester,
+  ) async {
+    await _pumpSelection(
+      tester,
+      assetManifest: [_atlasEntry(id: 'atlas-doctor')],
+      existingAssetPaths: {
+        'assets/images/professions/atlas-doctor.webp',
+        'assets/images/professions/atlas-doctor_thumb.webp',
+      },
+    );
+    await _scrollUntilVisible(tester, 'Médica amable');
+
+    expect(find.text('Médica amable'), findsWidgets);
+    expect(find.text('Profesiones'), findsWidgets);
+    expect(
+      find.bySemanticsLabel('Imagen segura de Médica amable'),
+      findsOneWidget,
+    );
+
+    expect(
+      _visibleAssetImageNames(tester),
+      contains('assets/images/professions/atlas-doctor_thumb.webp'),
+    );
+  });
+
+  testWidgets(
+    'keeps atlas selection local when approval metadata is unusable',
+    (tester) async {
+      await _pumpSelection(
+        tester,
+        assetManifest: [_atlasEntry(id: 'atlas-doctor', approved: false)],
+        existingAssetPaths: {
+          'assets/images/professions/atlas-doctor.webp',
+          'assets/images/professions/atlas-doctor_thumb.webp',
+        },
+      );
+      await _scrollUntilVisible(tester, 'Médica amable');
+
+      expect(find.text('Médica amable'), findsWidgets);
+      expect(find.byType(Image), findsNothing);
+    },
+  );
+}
+
+Future<void> _scrollUntilVisible(WidgetTester tester, String text) async {
+  final textFinder = find.text(text);
+  if (textFinder.evaluate().isNotEmpty) return;
+
+  await tester.scrollUntilVisible(
+    textFinder.first,
+    240,
+    scrollable: find.byType(Scrollable).last,
+  );
+}
+
+Set<String> _visibleAssetImageNames(WidgetTester tester) {
+  return tester
+      .widgetList<Image>(find.byType(Image))
+      .map((image) => image.image)
+      .whereType<ResizeImage>()
+      .map((image) => image.imageProvider)
+      .whereType<AssetImage>()
+      .map((image) => image.assetName)
+      .toSet();
 }
 
 Future<void> _pumpSelection(
@@ -138,6 +205,9 @@ Future<void> _pumpSelection(
   Set<String> existingAssetPaths = const {},
   AssetBundle? assetBundle,
 }) async {
+  await tester.binding.setSurfaceSize(const Size(760, 20000));
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+
   final prefs = await SharedPreferences.getInstance();
   final onboarding = OnboardingProvider(prefs: prefs)..markLoaded();
   await onboarding.completeDragOnboarding();
@@ -220,4 +290,26 @@ Map<String, Object?> _entryJson({required String id, bool approved = true}) {
 
 AssetManifestEntry _entry({required String id, bool approved = true}) {
   return AssetManifestEntry.fromJson(_entryJson(id: id, approved: approved));
+}
+
+AssetManifestEntry _atlasEntry({required String id, bool approved = true}) {
+  return AssetManifestEntry.fromJson({
+    'id': id,
+    'path': 'assets/images/professions/atlas-doctor.webp',
+    'thumbnailPath': 'assets/images/professions/atlas-doctor_thumb.webp',
+    'sourceTitle': 'User-provided project-owned atlas - varios-assets.png',
+    'sourceUrl': 'project-owned://assets/images/varios-assets.png',
+    'license': 'PROJECT-OWNED',
+    'licenseUrl': 'project-owned://LICENSE',
+    'attribution':
+        'User/project owner confirmed ownership and authorized using/publishing derived Puzzle Kids atlas assets on 2026-07-22.',
+    'approved': approved,
+    'approvedBy': 'Puzzle Kids project owner',
+    'approvedAt': '2026-07-22T00:00:00Z',
+    'dimensions': {'width': 1024, 'height': 1024},
+    'format': 'webp',
+    'bytes': 88796,
+    'sha256':
+        '5589e7042b82c642e289ca55fc94791d68843cb871330636969f89570d7ecbb4',
+  });
 }

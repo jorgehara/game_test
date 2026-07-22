@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/puzzle.dart';
 import '../models/puzzle_piece.dart';
 import '../providers/onboarding_provider.dart';
 import '../providers/progress_provider.dart';
 import '../providers/puzzle_game_provider.dart';
 import '../routes/app_routes.dart';
+import '../services/asset_manifest_validator.dart';
+import '../services/puzzle_asset_manifest_loader.dart';
+import '../services/puzzle_catalog_service.dart';
 import '../theme/pk_tokens.dart';
 import '../widgets/completion_dialog.dart';
 import '../widgets/pk_button.dart';
@@ -17,7 +21,16 @@ import '../widgets/puzzle_board.dart';
 import '../widgets/puzzle_piece_tile.dart';
 
 class PuzzleGameScreen extends StatefulWidget {
-  const PuzzleGameScreen({super.key});
+  const PuzzleGameScreen({
+    super.key,
+    this.assetManifest,
+    this.existingAssetPaths = const {},
+    this.assetBundle,
+  });
+
+  final List<AssetManifestEntry>? assetManifest;
+  final Set<String> existingAssetPaths;
+  final AssetBundle? assetBundle;
 
   @override
   State<PuzzleGameScreen> createState() => _PuzzleGameScreenState();
@@ -51,7 +64,12 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
             return _UnavailableGame(onBack: () => Navigator.maybePop(context));
           }
 
-          return _ReadyGame(provider: provider);
+          return _ReadyGame(
+            provider: provider,
+            assetManifest: widget.assetManifest,
+            existingAssetPaths: widget.existingAssetPaths,
+            assetBundle: widget.assetBundle,
+          );
         },
       ),
     );
@@ -59,9 +77,17 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 }
 
 class _ReadyGame extends StatefulWidget {
-  const _ReadyGame({required this.provider});
+  const _ReadyGame({
+    required this.provider,
+    required this.assetManifest,
+    required this.existingAssetPaths,
+    required this.assetBundle,
+  });
 
   final PuzzleGameProvider provider;
+  final List<AssetManifestEntry>? assetManifest;
+  final Set<String> existingAssetPaths;
+  final AssetBundle? assetBundle;
 
   @override
   State<_ReadyGame> createState() => _ReadyGameState();
@@ -73,6 +99,8 @@ class _ReadyGameState extends State<_ReadyGame> {
 
   final _stackKey = GlobalKey();
   final _boardKey = GlobalKey();
+  late Future<List<AssetManifestEntry>> _assetManifestFuture;
+  List<AssetManifestEntry>? _resolvedAssetManifest;
   _DragState? _drag;
   var _gestureVersion = 0;
   String? _completionDialogPuzzleId;
@@ -80,6 +108,28 @@ class _ReadyGameState extends State<_ReadyGame> {
   var _onboardingDialogOpen = false;
 
   PuzzleGameProvider get provider => widget.provider;
+
+  @override
+  void initState() {
+    super.initState();
+    _assetManifestFuture = _loadAssetManifest();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ReadyGame oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.assetManifest != widget.assetManifest ||
+        oldWidget.assetBundle != widget.assetBundle) {
+      _resolvedAssetManifest = null;
+      _assetManifestFuture = _loadAssetManifest();
+    }
+  }
+
+  Future<List<AssetManifestEntry>> _loadAssetManifest() {
+    return widget.assetManifest == null
+        ? PuzzleAssetManifestLoader.loadApproved(bundle: widget.assetBundle)
+        : Future.value(widget.assetManifest);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,95 +140,136 @@ class _ReadyGameState extends State<_ReadyGame> {
     final total = provider.pieces.length;
     final spacing = context.pkSpacing;
 
-    return Stack(
-      key: _stackKey,
-      children: [
-        Padding(
-          key: const Key('puzzle-game-screen'),
-          padding: EdgeInsets.all(spacing.lg),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 780;
-              final board = PuzzleBoard(
-                boardMeasurementKey: _boardKey,
-                puzzle: puzzle,
-                pieces: provider.pieces,
-                placedPositions: provider.placedPositions,
-              );
-              final tray = _PuzzleTray(
-                provider: provider,
-                draggingPieceId: _drag?.piece.id,
-                onDragStart: _startDrag,
-                onDragUpdate: _updateDrag,
-                onDragEnd: _endDrag,
-              );
+    return FutureBuilder<List<AssetManifestEntry>>(
+      future: _assetManifestFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          _resolvedAssetManifest = snapshot.data;
+        }
+        final pieceImageSource = _pieceImageSourceFor(
+          puzzle,
+          snapshot.data ?? _resolvedAssetManifest,
+        );
 
-              return Column(
-                children: [
-                  _GameHeader(provider: provider, onReset: _reset),
-                  SizedBox(height: spacing.md),
-                  Expanded(
-                    child: isWide
-                        ? Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(flex: 3, child: board),
-                              SizedBox(width: spacing.lg),
-                              SizedBox(width: 280, child: tray),
-                            ],
-                          )
-                        : Column(
-                            children: [
-                              Expanded(child: board),
-                              SizedBox(height: spacing.md),
-                              SizedBox(height: 148, child: tray),
-                            ],
-                          ),
-                  ),
-                  SizedBox(height: spacing.sm),
-                  Text(
-                    provider.isCompleted
-                        ? '¡Puzzle completo!'
-                        : 'Arrastrá una pieza cerca de su lugar.',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  Semantics(
-                    key: const Key('puzzle-progress'),
-                    label: 'Progreso ${provider.progressCount} de $total',
-                    child: Text('Progreso ${provider.progressCount}/$total'),
-                  ),
-                  SizedBox(height: spacing.sm),
-                  PkProgress(
-                    value: total == 0 ? 0 : provider.progressCount / total,
-                    label: 'Progreso del puzzle',
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-        if (_drag != null)
-          AnimatedPositioned(
-            key: Key('puzzle-dragging-piece-${_drag!.piece.id}'),
-            left: _drag!.topLeft.dx,
-            top: _drag!.topLeft.dy,
-            width: _drag!.size.width,
-            height: _drag!.size.height,
-            duration: _drag!.isReturning
-                ? context.pkMotion.resolve(context, _returnDuration)
-                : Duration.zero,
-            curve: Curves.easeOutCubic,
-            onEnd: _finishReturn,
-            child: IgnorePointer(
-              child: PuzzlePieceTile(
-                piece: _drag!.piece,
-                totalPieces: provider.pieces.length,
-                expand: true,
+        return Stack(
+          key: _stackKey,
+          children: [
+            Padding(
+              key: const Key('puzzle-game-screen'),
+              padding: EdgeInsets.all(spacing.lg),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 780;
+                  final board = PuzzleBoard(
+                    boardMeasurementKey: _boardKey,
+                    puzzle: puzzle,
+                    pieces: provider.pieces,
+                    placedPositions: provider.placedPositions,
+                    pieceImageSource: pieceImageSource,
+                  );
+                  final tray = _PuzzleTray(
+                    provider: provider,
+                    pieceImageSource: pieceImageSource,
+                    draggingPieceId: _drag?.piece.id,
+                    onDragStart: (piece, context) =>
+                        _startDrag(piece, context, pieceImageSource),
+                    onDragUpdate: _updateDrag,
+                    onDragEnd: _endDrag,
+                  );
+
+                  return Column(
+                    children: [
+                      _GameHeader(provider: provider, onReset: _reset),
+                      SizedBox(height: spacing.md),
+                      Expanded(
+                        child: isWide
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(flex: 3, child: board),
+                                  SizedBox(width: spacing.lg),
+                                  SizedBox(width: 280, child: tray),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Expanded(child: board),
+                                  SizedBox(height: spacing.md),
+                                  SizedBox(height: 148, child: tray),
+                                ],
+                              ),
+                      ),
+                      SizedBox(height: spacing.sm),
+                      Text(
+                        provider.isCompleted
+                            ? '¡Puzzle completo!'
+                            : 'Arrastrá una pieza cerca de su lugar.',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      Semantics(
+                        key: const Key('puzzle-progress'),
+                        label: 'Progreso ${provider.progressCount} de $total',
+                        child: Text(
+                          'Progreso ${provider.progressCount}/$total',
+                        ),
+                      ),
+                      SizedBox(height: spacing.sm),
+                      PkProgress(
+                        value: total == 0 ? 0 : provider.progressCount / total,
+                        label: 'Progreso del puzzle',
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-          ),
-      ],
+            if (_drag != null)
+              AnimatedPositioned(
+                key: Key('puzzle-dragging-piece-${_drag!.piece.id}'),
+                left: _drag!.topLeft.dx,
+                top: _drag!.topLeft.dy,
+                width: _drag!.size.width,
+                height: _drag!.size.height,
+                duration: _drag!.isReturning
+                    ? context.pkMotion.resolve(context, _returnDuration)
+                    : Duration.zero,
+                curve: Curves.easeOutCubic,
+                onEnd: _finishReturn,
+                child: IgnorePointer(
+                  child: PuzzlePieceTile(
+                    piece: _drag!.piece,
+                    totalPieces: provider.pieces.length,
+                    imageSource: _drag!.imageSource,
+                    expand: true,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  PuzzlePieceImageSource? _pieceImageSourceFor(
+    Puzzle puzzle,
+    List<AssetManifestEntry>? manifest,
+  ) {
+    if (manifest == null) return null;
+
+    final approvedAsset = PuzzleCatalogService.approvedAssetFor(
+      puzzle,
+      manifest,
+      existingAssetPaths: widget.existingAssetPaths.isEmpty
+          ? PuzzleAssetManifestLoader.existingPathsFor(manifest)
+          : widget.existingAssetPaths,
+    );
+    if (approvedAsset == null) return null;
+
+    return PuzzlePieceImageSource(
+      assetPath: approvedAsset.path,
+      sourceWidth: approvedAsset.width,
+      sourceHeight: approvedAsset.height,
     );
   }
 
@@ -259,7 +350,11 @@ class _ReadyGameState extends State<_ReadyGame> {
     });
   }
 
-  void _startDrag(PuzzlePiece piece, BuildContext pieceContext) {
+  void _startDrag(
+    PuzzlePiece piece,
+    BuildContext pieceContext,
+    PuzzlePieceImageSource? pieceImageSource,
+  ) {
     if (provider.isPlaced(piece.id) || provider.isCompleted) {
       return;
     }
@@ -277,6 +372,7 @@ class _ReadyGameState extends State<_ReadyGame> {
     setState(() {
       _drag = _DragState(
         piece: piece,
+        imageSource: pieceImageSource,
         topLeft: pieceTopLeft,
         startTopLeft: pieceTopLeft,
         size: size,
@@ -460,6 +556,7 @@ class _GameHeader extends StatelessWidget {
 class _PuzzleTray extends StatelessWidget {
   const _PuzzleTray({
     required this.provider,
+    required this.pieceImageSource,
     required this.draggingPieceId,
     required this.onDragStart,
     required this.onDragUpdate,
@@ -467,6 +564,7 @@ class _PuzzleTray extends StatelessWidget {
   });
 
   final PuzzleGameProvider provider;
+  final PuzzlePieceImageSource? pieceImageSource;
   final String? draggingPieceId;
   final void Function(PuzzlePiece piece, BuildContext context) onDragStart;
   final void Function(DragUpdateDetails details) onDragUpdate;
@@ -505,6 +603,7 @@ class _PuzzleTray extends StatelessWidget {
                           key: Key('puzzle-piece-${piece.id}'),
                           piece: piece,
                           totalPieces: provider.pieces.length,
+                          imageSource: pieceImageSource,
                         ),
                       ),
                     );
@@ -521,6 +620,7 @@ class _PuzzleTray extends StatelessWidget {
 class _DragState {
   const _DragState({
     required this.piece,
+    required this.imageSource,
     required this.topLeft,
     required this.startTopLeft,
     required this.size,
@@ -529,6 +629,7 @@ class _DragState {
   });
 
   final PuzzlePiece piece;
+  final PuzzlePieceImageSource? imageSource;
   final Offset topLeft;
   final Offset startTopLeft;
   final Size size;
@@ -538,6 +639,7 @@ class _DragState {
   _DragState copyWith({Offset? topLeft, bool? isReturning}) {
     return _DragState(
       piece: piece,
+      imageSource: imageSource,
       topLeft: topLeft ?? this.topLeft,
       startTopLeft: startTopLeft,
       size: size,

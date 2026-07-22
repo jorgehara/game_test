@@ -60,6 +60,13 @@ class PuzzleCatalogService {
       placeholderLabel: 'Castillo con torres redondas',
     ),
     _puzzle(
+      id: 'castillo-princesa',
+      name: 'Castillo princesa',
+      category: PuzzleCategory.castles,
+      placeholderLabel: 'Castillo de princesa con torres suaves',
+      imageExtension: 'webp',
+    ),
+    _puzzle(
       id: 'castle-rainbow',
       name: 'Castillo arcoíris',
       category: PuzzleCategory.castles,
@@ -137,6 +144,64 @@ class PuzzleCatalogService {
       category: PuzzleCategory.ocean,
       level: 4,
     ),
+    _puzzle(
+      id: 'atlas-dinosaurs',
+      name: 'Dinosaurios aventureros',
+      category: PuzzleCategory.dinosaurs,
+      level: 4,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-race-car',
+      name: 'Auto de carrera',
+      category: PuzzleCategory.vehicles,
+      level: 4,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-princess-castle',
+      name: 'Princesa y castillo',
+      category: PuzzleCategory.castles,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-doctor',
+      name: 'Médica amable',
+      category: PuzzleCategory.professions,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-astronaut',
+      name: 'Astronauta espacial',
+      category: PuzzleCategory.space,
+      level: 4,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-animals',
+      name: 'Animales amigos',
+      category: PuzzleCategory.animals,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-airplane',
+      name: 'Avión alegre',
+      category: PuzzleCategory.vehicles,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-truck',
+      name: 'Camión de trabajo',
+      category: PuzzleCategory.vehicles,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-emergency-vehicles',
+      name: 'Vehículos de emergencia',
+      category: PuzzleCategory.vehicles,
+      level: 4,
+      imageExtension: 'webp',
+    ),
   ]);
 
   static List<Puzzle> all() {
@@ -161,12 +226,21 @@ class PuzzleCatalogService {
     Iterable<AssetManifestEntry> manifest, {
     Set<String> existingAssetPaths = const {},
   }) {
+    if (!_supportsRenderedImageGrid(puzzle.grid)) {
+      return null;
+    }
+
     final usableAssets = AssetManifestValidator.approvedUsableAssets(
       manifest.where((entry) => entry.id == puzzle.id),
       existingAssetPaths: existingAssetPaths,
     );
 
     return usableAssets.isEmpty ? null : usableAssets.first;
+  }
+
+  static bool _supportsRenderedImageGrid(GridSpec grid) {
+    return grid.rows == grid.columns &&
+        (grid.rows == 1 || grid.rows == 2 || grid.rows == 3);
   }
 
   static void validate(Iterable<Puzzle> puzzles) {
@@ -216,18 +290,18 @@ class PuzzleCatalogService {
     required PuzzleCategory category,
     int level = 2,
     String? placeholderLabel,
+    String imageExtension = 'png',
   }) {
     final grid = level == 4
         ? GridSpec(rows: 3, columns: 3)
         : GridSpec(rows: 2, columns: 2);
-    const extension = 'png';
 
     return Puzzle(
       id: id,
       name: name,
       category: category,
-      imagePath: 'assets/images/${category.id}/$id.$extension',
-      thumbnailPath: 'assets/images/${category.id}/${id}_thumb.$extension',
+      imagePath: 'assets/images/${category.id}/$id.$imageExtension',
+      thumbnailPath: 'assets/images/${category.id}/${id}_thumb.$imageExtension',
       difficulty: PuzzleDifficulty.level(level),
       grid: grid,
       placeholderSeed: id.hashCode,

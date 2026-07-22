@@ -1,0 +1,338 @@
+{
+  "change": "puzzle-kids-atlas-assets",
+  "slice": "PR1",
+  "source": {
+    "path": "assets/images/varios-assets.png",
+    "title": "varios-assets.png local atlas",
+    "dimensions": {
+      "width": 1402,
+      "height": 1122
+    },
+    "bytes": 2605543,
+    "sha256": "ed62a9c8aac57753bda95a1b01a67d8ab89bc5b9b6682bd30caf54f4a85f5532",
+    "license": "PROJECT-OWNED",
+    "provenance": "User/project owner explicitly confirmed ownership and authorized using/publishing derived assets on 2026-07-22.",
+    "bundling": "Source atlas remains local input only; do not stage or reference it in pubspec/catalog."
+  },
+  "generation": {
+    "fullSize": {
+      "width": 1024,
+      "height": 1024
+    },
+    "thumbnailSize": {
+      "width": 256,
+      "height": 256
+    },
+    "format": "webp",
+    "quality": 86,
+    "cropPolicy": "Explicit 3x3 panel boxes from 1402x1122 atlas, then centered 374x374 square crop per panel to avoid horizontal remainder drift and neighboring-panel bleed."
+  },
+  "outputs": [
+    {
+      "id": "atlas-dinosaurs",
+      "nameEs": "Dinosaurios aventureros",
+      "category": "dinosaurs",
+      "level": 4,
+      "panelBox": [
+        0,
+        0,
+        467,
+        374
+      ],
+      "cropBox": [
+        46,
+        0,
+        420,
+        374
+      ],
+      "full": {
+        "path": "assets/images/dinosaurs/atlas-dinosaurs.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 107054,
+        "sha256": "e6fb67cf3af14af53e0e2cb6ddf1f7a99e475aafe327cbf6e8513ad3e5196500"
+      },
+      "thumbnail": {
+        "path": "assets/images/dinosaurs/atlas-dinosaurs_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 21758,
+        "sha256": "9c5eae527218105aae2a171a15ef53fce7d9fbe9699782a93eeadead47a18982"
+      }
+    },
+    {
+      "id": "atlas-race-car",
+      "nameEs": "Auto de carrera",
+      "category": "vehicles",
+      "level": 4,
+      "panelBox": [
+        467,
+        0,
+        934,
+        374
+      ],
+      "cropBox": [
+        513,
+        0,
+        887,
+        374
+      ],
+      "full": {
+        "path": "assets/images/vehicles/atlas-race-car.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 89344,
+        "sha256": "f4bde42398b750f494544c120db49ec41459e48425e72739498716ed428556d6"
+      },
+      "thumbnail": {
+        "path": "assets/images/vehicles/atlas-race-car_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 18480,
+        "sha256": "5c8d2e0678051975bda748be41f2594726d804cb4e213541d833e499dc519dec"
+      }
+    },
+    {
+      "id": "atlas-princess-castle",
+      "nameEs": "Princesa y castillo",
+      "category": "castles",
+      "level": 2,
+      "panelBox": [
+        934,
+        0,
+        1402,
+        374
+      ],
+      "cropBox": [
+        981,
+        0,
+        1355,
+        374
+      ],
+      "full": {
+        "path": "assets/images/castles/atlas-princess-castle.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 109338,
+        "sha256": "2ed970bbc6a00d564ae068cb80e64f594cb59f8a884e8392b7e033667aae63c5"
+      },
+      "thumbnail": {
+        "path": "assets/images/castles/atlas-princess-castle_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 21900,
+        "sha256": "7ba88f4b8a856f772e28f76b84bd224aad27f0dfde254c28f44f0ab4be628fa3"
+      }
+    },
+    {
+      "id": "atlas-doctor",
+      "nameEs": "Médica amable",
+      "category": "professions",
+      "level": 2,
+      "panelBox": [
+        0,
+        374,
+        467,
+        748
+      ],
+      "cropBox": [
+        46,
+        374,
+        420,
+        748
+      ],
+      "full": {
+        "path": "assets/images/professions/atlas-doctor.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 88796,
+        "sha256": "5589e7042b82c642e289ca55fc94791d68843cb871330636969f89570d7ecbb4"
+      },
+      "thumbnail": {
+        "path": "assets/images/professions/atlas-doctor_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 18332,
+        "sha256": "0eb0061ccdeb58c15672f49623d594c020370bb28a1c2af9471c88775d1db330"
+      }
+    },
+    {
+      "id": "atlas-astronaut",
+      "nameEs": "Astronauta espacial",
+      "category": "space",
+      "level": 4,
+      "panelBox": [
+        467,
+        374,
+        934,
+        748
+      ],
+      "cropBox": [
+        513,
+        374,
+        887,
+        748
+      ],
+      "full": {
+        "path": "assets/images/space/atlas-astronaut.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 86628,
+        "sha256": "6e80ea4818b5e3bf1777481fb925d24a9d74fc57380185210b46f94ea80ff59d"
+      },
+      "thumbnail": {
+        "path": "assets/images/space/atlas-astronaut_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 17864,
+        "sha256": "db338ec4393d984b239970b5d44667f629c83246829caa6a01c526b309a9b4a8"
+      }
+    },
+    {
+      "id": "atlas-animals",
+      "nameEs": "Animales amigos",
+      "category": "animals",
+      "level": 2,
+      "panelBox": [
+        934,
+        374,
+        1402,
+        748
+      ],
+      "cropBox": [
+        981,
+        374,
+        1355,
+        748
+      ],
+      "full": {
+        "path": "assets/images/animals/atlas-animals.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 117614,
+        "sha256": "74fcaa2943ecabb8a884169ee8f14652dd47262baef18f53df4c0132801b10de"
+      },
+      "thumbnail": {
+        "path": "assets/images/animals/atlas-animals_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 23930,
+        "sha256": "0b4593f2797c5fa7a5eae517e742c4569f2deab76832acc14b67831147ba63ef"
+      }
+    },
+    {
+      "id": "atlas-airplane",
+      "nameEs": "Avión alegre",
+      "category": "vehicles",
+      "level": 2,
+      "panelBox": [
+        0,
+        748,
+        467,
+        1122
+      ],
+      "cropBox": [
+        46,
+        748,
+        420,
+        1122
+      ],
+      "full": {
+        "path": "assets/images/vehicles/atlas-airplane.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 71394,
+        "sha256": "97d853fc652eecec301eced8602a8d115c7f2063c659d53b1a47e1f3547847df"
+      },
+      "thumbnail": {
+        "path": "assets/images/vehicles/atlas-airplane_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 14334,
+        "sha256": "c9c5f9a1781a600a2d77b955dd1d817b16e67820a6b9d6b7183c05c2e4d17920"
+      }
+    },
+    {
+      "id": "atlas-truck",
+      "nameEs": "Camión de trabajo",
+      "category": "vehicles",
+      "level": 2,
+      "panelBox": [
+        467,
+        748,
+        934,
+        1122
+      ],
+      "cropBox": [
+        513,
+        748,
+        887,
+        1122
+      ],
+      "full": {
+        "path": "assets/images/vehicles/atlas-truck.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 88782,
+        "sha256": "51a233923340aaa31c075f1fa219577974ef85dd6017946bce978721beb274d0"
+      },
+      "thumbnail": {
+        "path": "assets/images/vehicles/atlas-truck_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 18008,
+        "sha256": "ccc0aa04293d02b08fff7cd58d4dee9092c5e692ac03b355e8c5b0898a3e8c09"
+      }
+    },
+    {
+      "id": "atlas-emergency-vehicles",
+      "nameEs": "Vehículos de emergencia",
+      "category": "vehicles",
+      "level": 4,
+      "panelBox": [
+        934,
+        748,
+        1402,
+        1122
+      ],
+      "cropBox": [
+        981,
+        748,
+        1355,
+        1122
+      ],
+      "full": {
+        "path": "assets/images/vehicles/atlas-emergency-vehicles.webp",
+        "format": "webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 99176,
+        "sha256": "03c8506e698215d5d4b4e8be995140efc306122f7a8531d7412dbfdc57bbda29"
+      },
+      "thumbnail": {
+        "path": "assets/images/vehicles/atlas-emergency-vehicles_thumb.webp",
+        "format": "webp",
+        "width": 256,
+        "height": 256,
+        "bytes": 20050,
+        "sha256": "476cef345bb6165e3ee85da05cfc634b996548c7b2afd40014faa282792e45f8"
+      }
+    }
+  ]
+}

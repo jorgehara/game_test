@@ -17,16 +17,19 @@ void main() {
           'princesses',
           'unicorns',
           'ocean',
+          'professions',
         ]),
       );
       expect(PuzzleCategory.castles.label, 'Castillos');
       expect(PuzzleCategory.princesses.label, 'Princesas');
       expect(PuzzleCategory.unicorns.label, 'Unicornios');
+      expect(PuzzleCategory.professions.label, 'Profesiones');
     });
 
     test('parses known category ids', () {
       expect(PuzzleCategory.fromId('animals'), PuzzleCategory.animals);
       expect(PuzzleCategory.fromId('space'), PuzzleCategory.space);
+      expect(PuzzleCategory.fromId('professions'), PuzzleCategory.professions);
     });
 
     test('rejects unknown category ids', () {

@@ -14,6 +14,20 @@
     "approved": true
   },
   {
+    "id": "castillo-princesa",
+    "name": "Castillo princesa",
+    "category": "castles",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/castles/castillo-princesa.webp",
+    "thumbnail": "assets/images/castles/castillo-princesa_thumb.webp",
+    "placeholder": "Castillo de princesa con torres suaves",
+    "approved": true
+  },
+  {
     "id": "princess-crown",
     "name": "Corona de princesa",
     "category": "princesses",
@@ -123,6 +137,105 @@
     "image": "assets/images/fruits/berry-cupcake.png",
     "thumbnail": "assets/images/fruits/berry-cupcake_thumb.png",
     "placeholder": "Cupcake frutal con sonrisa",
+    "approved": true
+  },
+  {
+    "id": "atlas-dinosaurs",
+    "name": "Dinosaurios aventureros",
+    "category": "dinosaurs",
+    "level": 4,
+    "grid": {"rows": 3, "columns": 3},
+    "image": "assets/images/dinosaurs/atlas-dinosaurs.webp",
+    "thumbnail": "assets/images/dinosaurs/atlas-dinosaurs_thumb.webp",
+    "placeholder": "Dinosaurios aventureros",
+    "approved": true
+  },
+  {
+    "id": "atlas-race-car",
+    "name": "Auto de carrera",
+    "category": "vehicles",
+    "level": 4,
+    "grid": {"rows": 3, "columns": 3},
+    "image": "assets/images/vehicles/atlas-race-car.webp",
+    "thumbnail": "assets/images/vehicles/atlas-race-car_thumb.webp",
+    "placeholder": "Auto de carrera",
+    "approved": true
+  },
+  {
+    "id": "atlas-princess-castle",
+    "name": "Princesa y castillo",
+    "category": "castles",
+    "level": 2,
+    "grid": {"rows": 2, "columns": 2},
+    "image": "assets/images/castles/atlas-princess-castle.webp",
+    "thumbnail": "assets/images/castles/atlas-princess-castle_thumb.webp",
+    "placeholder": "Princesa y castillo",
+    "approved": true
+  },
+  {
+    "id": "atlas-doctor",
+    "name": "Médica amable",
+    "category": "professions",
+    "level": 2,
+    "grid": {"rows": 2, "columns": 2},
+    "image": "assets/images/professions/atlas-doctor.webp",
+    "thumbnail": "assets/images/professions/atlas-doctor_thumb.webp",
+    "placeholder": "Médica amable",
+    "approved": true
+  },
+  {
+    "id": "atlas-astronaut",
+    "name": "Astronauta espacial",
+    "category": "space",
+    "level": 4,
+    "grid": {"rows": 3, "columns": 3},
+    "image": "assets/images/space/atlas-astronaut.webp",
+    "thumbnail": "assets/images/space/atlas-astronaut_thumb.webp",
+    "placeholder": "Astronauta espacial",
+    "approved": true
+  },
+  {
+    "id": "atlas-animals",
+    "name": "Animales amigos",
+    "category": "animals",
+    "level": 2,
+    "grid": {"rows": 2, "columns": 2},
+    "image": "assets/images/animals/atlas-animals.webp",
+    "thumbnail": "assets/images/animals/atlas-animals_thumb.webp",
+    "placeholder": "Animales amigos",
+    "approved": true
+  },
+  {
+    "id": "atlas-airplane",
+    "name": "Avión alegre",
+    "category": "vehicles",
+    "level": 2,
+    "grid": {"rows": 2, "columns": 2},
+    "image": "assets/images/vehicles/atlas-airplane.webp",
+    "thumbnail": "assets/images/vehicles/atlas-airplane_thumb.webp",
+    "placeholder": "Avión alegre",
+    "approved": true
+  },
+  {
+    "id": "atlas-truck",
+    "name": "Camión de trabajo",
+    "category": "vehicles",
+    "level": 2,
+    "grid": {"rows": 2, "columns": 2},
+    "image": "assets/images/vehicles/atlas-truck.webp",
+    "thumbnail": "assets/images/vehicles/atlas-truck_thumb.webp",
+    "placeholder": "Camión de trabajo",
+    "approved": true
+  },
+  {
+    "id": "atlas-emergency-vehicles",
+    "name": "Vehículos de emergencia",
+    "category": "vehicles",
+    "level": 4,
+    "grid": {"rows": 3, "columns": 3},
+    "image": "assets/images/vehicles/atlas-emergency-vehicles.webp",
+    "thumbnail": "assets/images/vehicles/atlas-emergency-vehicles_thumb.webp",
+    "placeholder": "Vehículos de emergencia",
     "approved": true
   }
 ]

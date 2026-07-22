@@ -11,7 +11,7 @@ void main() {
     test('loads only approved local bundled manifest entries', () async {
       final entries = await PuzzleAssetManifestLoader.loadApproved();
 
-      expect(entries, hasLength(9));
+      expect(entries, hasLength(19));
       expect(entries.every((entry) => entry.approved), isTrue);
       expect(
         entries.every(
