@@ -144,6 +144,50 @@ void main() {
       );
     });
 
+    test('integrates the 9 project-owned starter pack puzzles', () {
+      final starterIds = {
+        'castle-bright',
+        'princess-crown',
+        'unicorn-cloud',
+        'dragon-kite',
+        'mermaid-lagoon',
+        'rocket-moon',
+        'fox-forest',
+        'rainbow-bus',
+        'berry-cupcake',
+      };
+      final starterPack = PuzzleCatalogService.all()
+          .where((puzzle) => starterIds.contains(puzzle.id))
+          .toList(growable: false);
+
+      expect(starterPack, hasLength(9));
+      expect(starterPack.map((puzzle) => puzzle.id).toSet(), starterIds);
+      expect(
+        starterPack.map((puzzle) => puzzle.category).toSet(),
+        containsAll([
+          PuzzleCategory.castles,
+          PuzzleCategory.princesses,
+          PuzzleCategory.unicorns,
+          PuzzleCategory.animals,
+          PuzzleCategory.vehicles,
+          PuzzleCategory.fruits,
+          PuzzleCategory.dinosaurs,
+          PuzzleCategory.space,
+          PuzzleCategory.ocean,
+        ]),
+      );
+      expect(
+        starterPack.every((puzzle) => puzzle.imagePath.endsWith('.png')),
+        isTrue,
+      );
+      expect(
+        starterPack.every(
+          (puzzle) => puzzle.thumbnailPath.endsWith('_thumb.png'),
+        ),
+        isTrue,
+      );
+    });
+
     test(
       'validates catalog duplicates and invalid metadata deterministically',
       () {

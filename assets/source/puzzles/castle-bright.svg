@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Castillo brillante</title>
+  <desc id="desc">PROJECT-OWNED Puzzle Kids vector source for castle-bright; generated locally without external artwork.</desc>
+  <rect width="512" height="512" rx="56" fill="#9fd7ff"/>
+  <circle cx="430" cy="78" r="54" fill="#ffd166" opacity="0.45"/>
+  <circle cx="92" cy="92" r="28" fill="white" opacity="0.75"/>
+  <circle cx="130" cy="90" r="36" fill="white" opacity="0.75"/>
+  <circle cx="170" cy="98" r="28" fill="white" opacity="0.75"/>
+  <path d="M70 364l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2zM390 144l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2zM438 326l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z" fill="#ffd166"/>
+  <g fill="#7c5cff" stroke="rgba(0,0,0,.12)" stroke-width="8">
+    <circle cx="256" cy="276" r="108"/>
+  </g>
+  <g fill="#ef476f" opacity="0.9">
+    <circle cx="220" cy="254" r="16"/><circle cx="292" cy="254" r="16"/>
+    <rect x="216" y="330" width="80" height="18" rx="9"/>
+  </g>
+  <text x="256" y="470" text-anchor="middle" font-size="28" font-family="Verdana" fill="#4cc9f0">castle</text>
+</svg>

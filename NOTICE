@@ -2,8 +2,8 @@ Puzzle Kids asset notice
 
 Android launcher icon: PROJECT-OWNED original vector artwork in assets/source/icon/puzzle-kids-icon.svg. No external artwork or copyrighted image asset was used.
 
-No real third-party puzzle images are bundled in this slice.
+Puzzle starter pack: PROJECT-OWNED original vector artwork in assets/source/puzzles/*.svg, rasterized locally into assets/images/**/*.png by assets/source/puzzles/generate_project_owned_pack.py. No Pinterest assets, external downloads, third-party artwork, scraping, or hotlinks were used.
 
-The bundled assets/catalog/asset_licenses.json file is an unapproved sample only. Its entries are approved=false, are rejected by AssetManifestValidator, and must not render as real puzzle images.
+The bundled assets/catalog/asset_licenses.json file is the approval ledger for the project-owned starter pack. Approved entries use exactly these fields: id, path, thumbnailPath, sourceTitle, sourceUrl, license, licenseUrl, attribution, approved, approvedBy, approvedAt, dimensions, format, bytes, and sha256. dimensions is a nested object containing width and height; the manifest does not use top-level width or height fields.
 
-Future image assets must be listed in assets/catalog/asset_licenses.json before use, with origin, license, attribution, dimensions, format, required bytes, approvedBy, approvedAt, and approved=true only after review.
+Future image assets must be listed in assets/catalog/asset_licenses.json before use, with the same schema fields above and approved=true only after review. Pinterest remains reference-only and must not be used as source, hotlink, scrape target, or proof for committed binaries.

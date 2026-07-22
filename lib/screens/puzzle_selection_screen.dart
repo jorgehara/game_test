@@ -6,21 +6,39 @@ import '../models/puzzle_category.dart';
 import '../providers/puzzle_game_provider.dart';
 import '../routes/app_routes.dart';
 import '../services/asset_manifest_validator.dart';
+import '../services/puzzle_asset_manifest_loader.dart';
 import '../services/puzzle_catalog_service.dart';
 import '../theme/pk_tokens.dart';
 import '../widgets/pk_card.dart';
 import '../widgets/pk_image_tile.dart';
 import '../widgets/pk_scaffold.dart';
 
-class PuzzleSelectionScreen extends StatelessWidget {
+class PuzzleSelectionScreen extends StatefulWidget {
   const PuzzleSelectionScreen({
     super.key,
-    this.assetManifest = const [],
+    this.assetManifest,
     this.existingAssetPaths = const {},
+    this.assetBundle,
   });
 
-  final List<AssetManifestEntry> assetManifest;
+  final List<AssetManifestEntry>? assetManifest;
   final Set<String> existingAssetPaths;
+  final AssetBundle? assetBundle;
+
+  @override
+  State<PuzzleSelectionScreen> createState() => _PuzzleSelectionScreenState();
+}
+
+class _PuzzleSelectionScreenState extends State<PuzzleSelectionScreen> {
+  late final Future<List<AssetManifestEntry>> _manifestFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _manifestFuture = widget.assetManifest == null
+        ? PuzzleAssetManifestLoader.loadApproved(bundle: widget.assetBundle)
+        : Future.value(widget.assetManifest);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,23 +49,34 @@ class PuzzleSelectionScreen extends StatelessWidget {
       title: 'Selección',
       child: Padding(
         padding: EdgeInsets.all(spacing.lg),
-        child: puzzles.isEmpty
-            ? const _EmptyCatalog()
-            : ListView.separated(
-                itemCount: puzzles.length + 1,
-                separatorBuilder: (context, _) => SizedBox(height: spacing.md),
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return const _SelectionHeader();
-                  }
+        child: FutureBuilder<List<AssetManifestEntry>>(
+          future: _manifestFuture,
+          builder: (context, snapshot) {
+            final assetManifest = snapshot.data ?? const <AssetManifestEntry>[];
+            final existingAssetPaths = widget.assetManifest == null
+                ? PuzzleAssetManifestLoader.existingPathsFor(assetManifest)
+                : widget.existingAssetPaths;
 
-                  return _PuzzleSelectionCard(
-                    puzzle: puzzles[index - 1],
-                    assetManifest: assetManifest,
-                    existingAssetPaths: existingAssetPaths,
+            return puzzles.isEmpty
+                ? const _EmptyCatalog()
+                : ListView.separated(
+                    itemCount: puzzles.length + 1,
+                    separatorBuilder: (context, _) =>
+                        SizedBox(height: spacing.md),
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return const _SelectionHeader();
+                      }
+
+                      return _PuzzleSelectionCard(
+                        puzzle: puzzles[index - 1],
+                        assetManifest: assetManifest,
+                        existingAssetPaths: existingAssetPaths,
+                      );
+                    },
                   );
-                },
-              ),
+          },
+        ),
       ),
     );
   }
@@ -122,7 +151,7 @@ class _PuzzleSelectionCard extends StatelessWidget {
           PkImageTile(
             label: 'Imagen segura de ${puzzle.name}',
             seed: puzzle.placeholderSeed,
-            assetPath: approvedAsset?.path,
+            assetPath: approvedAsset?.thumbnailPath ?? approvedAsset?.path,
             cacheWidth: 256,
             cacheHeight: 256,
           ),

@@ -92,6 +92,44 @@ class PuzzleCatalogService {
       level: 4,
       placeholderLabel: 'Unicornio con estrellas',
     ),
+    _puzzle(
+      id: 'dragon-kite',
+      name: 'Dragón barrilete',
+      category: PuzzleCategory.dinosaurs,
+      level: 4,
+      placeholderLabel: 'Dragón bebé con barrilete',
+    ),
+    _puzzle(
+      id: 'mermaid-lagoon',
+      name: 'Laguna sirena',
+      category: PuzzleCategory.ocean,
+      placeholderLabel: 'Sirena entre olas suaves',
+    ),
+    _puzzle(
+      id: 'rocket-moon',
+      name: 'Cohete lunar',
+      category: PuzzleCategory.space,
+      level: 4,
+      placeholderLabel: 'Cohete feliz rumbo a la luna',
+    ),
+    _puzzle(
+      id: 'fox-forest',
+      name: 'Zorro del bosque',
+      category: PuzzleCategory.animals,
+      placeholderLabel: 'Zorro naranja entre hojas',
+    ),
+    _puzzle(
+      id: 'rainbow-bus',
+      name: 'Colectivo arcoíris',
+      category: PuzzleCategory.vehicles,
+      placeholderLabel: 'Colectivo escolar de colores',
+    ),
+    _puzzle(
+      id: 'berry-cupcake',
+      name: 'Cupcake de frutillas',
+      category: PuzzleCategory.fruits,
+      placeholderLabel: 'Cupcake frutal con sonrisa',
+    ),
     _puzzle(id: 'whale', name: 'Ballena', category: PuzzleCategory.ocean),
     _puzzle(
       id: 'turtle',
@@ -182,12 +220,7 @@ class PuzzleCatalogService {
     final grid = level == 4
         ? GridSpec(rows: 3, columns: 3)
         : GridSpec(rows: 2, columns: 2);
-    final usesWebP = {
-      PuzzleCategory.castles,
-      PuzzleCategory.princesses,
-      PuzzleCategory.unicorns,
-    }.contains(category);
-    final extension = usesWebP ? 'webp' : 'png';
+    const extension = 'png';
 
     return Puzzle(
       id: id,

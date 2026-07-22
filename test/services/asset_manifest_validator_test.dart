@@ -543,7 +543,7 @@ void main() {
     );
 
     test(
-      'keeps bundled sample manifest local unapproved and unavailable for fallback',
+      'keeps bundled starter pack local project-owned and available for approved fallback',
       () {
         final manifestFile = File('assets/catalog/asset_licenses.json');
         final decoded =
@@ -553,18 +553,140 @@ void main() {
             .map(AssetManifestEntry.fromJson)
             .toList(growable: false);
 
-        expect(entries, isNotEmpty);
-        expect(entries.every((entry) => entry.approved == false), isTrue);
+        expect(entries, hasLength(9));
+        expect(entries.every((entry) => entry.approved), isTrue);
+        expect(
+          entries.every((entry) => entry.license == 'PROJECT-OWNED'),
+          isTrue,
+        );
         expect(
           AssetManifestValidator.validateEntries(
             entries,
-          ).map((issue) => issue.field),
-          containsAll(['approved', 'license']),
+            existingAssetPaths: _localImagePaths(),
+          ),
+          isEmpty,
         );
-        expect(AssetManifestValidator.approvedUsableAssets(entries), isEmpty);
+        expect(
+          AssetManifestValidator.approvedUsableAssets(
+            entries,
+            existingAssetPaths: _localImagePaths(),
+          ),
+          hasLength(9),
+        );
+      },
+    );
+
+    test(
+      'approves exactly 9 project-owned local starter pack assets',
+      () async {
+        final entries = _readBundledManifest();
+        final approved = entries.where((entry) => entry.approved).toList();
+        final existingPaths = _localImagePaths();
+        final catalogPaths = _readCatalogPaths();
+        final pubspecAssets = _readPubspecAssets();
+
+        expect(approved, hasLength(9));
+        expect(approved.map((entry) => entry.id), isA<Iterable<String>>());
+        expect(
+          approved.map((entry) => entry.id).toSet(),
+          containsAll(['castle-bright', 'princess-crown', 'unicorn-cloud']),
+        );
+        expect(
+          approved.every((entry) => entry.license == 'PROJECT-OWNED'),
+          isTrue,
+        );
+        expect(
+          approved.every((entry) => entry.attribution.contains('Puzzle Kids')),
+          isTrue,
+        );
+        expect(
+          approved
+              .expand((entry) => [entry.path, entry.thumbnailPath])
+              .nonNulls,
+          everyElement(isIn(existingPaths)),
+        );
+
+        expect(
+          AssetManifestValidator.validateEntries(
+            entries,
+            existingAssetPaths: existingPaths,
+          ),
+          isEmpty,
+        );
+        expect(
+          await AssetManifestValidator.validateEntriesWithProbe(
+            entries,
+            const LocalAssetProbe(),
+          ),
+          isEmpty,
+        );
+        expect(
+          AssetManifestValidator.validateCatalogAndPubspec(
+            entries: entries,
+            catalogPaths: catalogPaths,
+            pubspecAssets: pubspecAssets,
+          ),
+          isEmpty,
+        );
       },
     );
   });
+}
+
+List<AssetManifestEntry> _readBundledManifest() {
+  final manifestFile = File('assets/catalog/asset_licenses.json');
+  final decoded = jsonDecode(manifestFile.readAsStringSync()) as List<Object?>;
+  return decoded
+      .cast<Map<String, Object?>>()
+      .map(AssetManifestEntry.fromJson)
+      .toList(growable: false);
+}
+
+Set<String> _localImagePaths() {
+  final imageRoot = Directory('assets/images');
+  if (!imageRoot.existsSync()) return const {};
+  return imageRoot
+      .listSync(recursive: true)
+      .whereType<File>()
+      .map((file) => file.path.replaceAll('\\', '/'))
+      .where((path) => path.endsWith('.png') || path.endsWith('.webp'))
+      .toSet();
+}
+
+Set<String> _readCatalogPaths() {
+  final catalogFile = File('assets/catalog/puzzles.json');
+  final decoded = jsonDecode(catalogFile.readAsStringSync()) as List<Object?>;
+  return decoded.cast<Map<String, Object?>>().expand((puzzle) {
+    return [puzzle['image'], puzzle['thumbnail']].whereType<String>();
+  }).toSet();
+}
+
+Set<String> _readPubspecAssets() {
+  final lines = File('pubspec.yaml').readAsLinesSync();
+  final assets = <String>{};
+  var inFlutter = false;
+  var inAssets = false;
+  for (final line in lines) {
+    if (line.startsWith('flutter:')) {
+      inFlutter = true;
+      inAssets = false;
+      continue;
+    }
+    if (!inFlutter) continue;
+    if (line.startsWith('  assets:')) {
+      inAssets = true;
+      continue;
+    }
+    if (inAssets) {
+      final trimmed = line.trim();
+      if (trimmed.startsWith('- ')) {
+        assets.add(trimmed.substring(2));
+      } else if (trimmed.isNotEmpty && !trimmed.startsWith('#')) {
+        break;
+      }
+    }
+  }
+  return assets;
 }
 
 class _ThrowingProbe implements AssetProbe {

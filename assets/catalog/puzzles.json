@@ -4,32 +4,125 @@
     "name": "Castillo brillante",
     "category": "castles",
     "level": 2,
-    "grid": { "rows": 2, "columns": 2 },
-    "image": "assets/images/castles/castle-bright.webp",
-    "thumbnail": "assets/images/castles/castle-bright_thumb.webp",
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/castles/castle-bright.png",
+    "thumbnail": "assets/images/castles/castle-bright_thumb.png",
     "placeholder": "Castillo con torres redondas",
-    "approved": false
+    "approved": true
   },
   {
     "id": "princess-crown",
     "name": "Corona de princesa",
     "category": "princesses",
     "level": 2,
-    "grid": { "rows": 2, "columns": 2 },
-    "image": "assets/images/princesses/princess-crown.webp",
-    "thumbnail": "assets/images/princesses/princess-crown_thumb.webp",
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/princesses/princess-crown.png",
+    "thumbnail": "assets/images/princesses/princess-crown_thumb.png",
     "placeholder": "Corona amable de princesa",
-    "approved": false
+    "approved": true
   },
   {
     "id": "unicorn-cloud",
     "name": "Unicornio nube",
     "category": "unicorns",
     "level": 2,
-    "grid": { "rows": 2, "columns": 2 },
-    "image": "assets/images/unicorns/unicorn-cloud.webp",
-    "thumbnail": "assets/images/unicorns/unicorn-cloud_thumb.webp",
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/unicorns/unicorn-cloud.png",
+    "thumbnail": "assets/images/unicorns/unicorn-cloud_thumb.png",
     "placeholder": "Unicornio sobre una nube",
-    "approved": false
+    "approved": true
+  },
+  {
+    "id": "dragon-kite",
+    "name": "Dragón barrilete",
+    "category": "dinosaurs",
+    "level": 4,
+    "grid": {
+      "rows": 3,
+      "columns": 3
+    },
+    "image": "assets/images/dinosaurs/dragon-kite.png",
+    "thumbnail": "assets/images/dinosaurs/dragon-kite_thumb.png",
+    "placeholder": "Dragón bebé con barrilete",
+    "approved": true
+  },
+  {
+    "id": "mermaid-lagoon",
+    "name": "Laguna sirena",
+    "category": "ocean",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/ocean/mermaid-lagoon.png",
+    "thumbnail": "assets/images/ocean/mermaid-lagoon_thumb.png",
+    "placeholder": "Sirena entre olas suaves",
+    "approved": true
+  },
+  {
+    "id": "rocket-moon",
+    "name": "Cohete lunar",
+    "category": "space",
+    "level": 4,
+    "grid": {
+      "rows": 3,
+      "columns": 3
+    },
+    "image": "assets/images/space/rocket-moon.png",
+    "thumbnail": "assets/images/space/rocket-moon_thumb.png",
+    "placeholder": "Cohete feliz rumbo a la luna",
+    "approved": true
+  },
+  {
+    "id": "fox-forest",
+    "name": "Zorro del bosque",
+    "category": "animals",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/animals/fox-forest.png",
+    "thumbnail": "assets/images/animals/fox-forest_thumb.png",
+    "placeholder": "Zorro naranja entre hojas",
+    "approved": true
+  },
+  {
+    "id": "rainbow-bus",
+    "name": "Colectivo arcoíris",
+    "category": "vehicles",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/vehicles/rainbow-bus.png",
+    "thumbnail": "assets/images/vehicles/rainbow-bus_thumb.png",
+    "placeholder": "Colectivo escolar de colores",
+    "approved": true
+  },
+  {
+    "id": "berry-cupcake",
+    "name": "Cupcake de frutillas",
+    "category": "fruits",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/fruits/berry-cupcake.png",
+    "thumbnail": "assets/images/fruits/berry-cupcake_thumb.png",
+    "placeholder": "Cupcake frutal con sonrisa",
+    "approved": true
   }
 ]
