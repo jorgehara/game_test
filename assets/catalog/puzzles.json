@@ -8,8 +8,8 @@
       "rows": 2,
       "columns": 2
     },
-    "image": "assets/images/castles/castle-bright.png",
-    "thumbnail": "assets/images/castles/castle-bright_thumb.png",
+    "image": "assets/images/castles/castle-bright.webp",
+    "thumbnail": "assets/images/castles/castle-bright_thumb.webp",
     "placeholder": "Castillo con torres redondas",
     "approved": true
   },
@@ -144,7 +144,10 @@
     "name": "Dinosaurios aventureros",
     "category": "dinosaurs",
     "level": 4,
-    "grid": {"rows": 3, "columns": 3},
+    "grid": {
+      "rows": 3,
+      "columns": 3
+    },
     "image": "assets/images/dinosaurs/atlas-dinosaurs.webp",
     "thumbnail": "assets/images/dinosaurs/atlas-dinosaurs_thumb.webp",
     "placeholder": "Dinosaurios aventureros",
@@ -155,7 +158,10 @@
     "name": "Auto de carrera",
     "category": "vehicles",
     "level": 4,
-    "grid": {"rows": 3, "columns": 3},
+    "grid": {
+      "rows": 3,
+      "columns": 3
+    },
     "image": "assets/images/vehicles/atlas-race-car.webp",
     "thumbnail": "assets/images/vehicles/atlas-race-car_thumb.webp",
     "placeholder": "Auto de carrera",
@@ -166,7 +172,10 @@
     "name": "Princesa y castillo",
     "category": "castles",
     "level": 2,
-    "grid": {"rows": 2, "columns": 2},
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
     "image": "assets/images/castles/atlas-princess-castle.webp",
     "thumbnail": "assets/images/castles/atlas-princess-castle_thumb.webp",
     "placeholder": "Princesa y castillo",
@@ -177,7 +186,10 @@
     "name": "Médica amable",
     "category": "professions",
     "level": 2,
-    "grid": {"rows": 2, "columns": 2},
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
     "image": "assets/images/professions/atlas-doctor.webp",
     "thumbnail": "assets/images/professions/atlas-doctor_thumb.webp",
     "placeholder": "Médica amable",
@@ -188,7 +200,10 @@
     "name": "Astronauta espacial",
     "category": "space",
     "level": 4,
-    "grid": {"rows": 3, "columns": 3},
+    "grid": {
+      "rows": 3,
+      "columns": 3
+    },
     "image": "assets/images/space/atlas-astronaut.webp",
     "thumbnail": "assets/images/space/atlas-astronaut_thumb.webp",
     "placeholder": "Astronauta espacial",
@@ -199,7 +214,10 @@
     "name": "Animales amigos",
     "category": "animals",
     "level": 2,
-    "grid": {"rows": 2, "columns": 2},
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
     "image": "assets/images/animals/atlas-animals.webp",
     "thumbnail": "assets/images/animals/atlas-animals_thumb.webp",
     "placeholder": "Animales amigos",
@@ -210,7 +228,10 @@
     "name": "Avión alegre",
     "category": "vehicles",
     "level": 2,
-    "grid": {"rows": 2, "columns": 2},
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
     "image": "assets/images/vehicles/atlas-airplane.webp",
     "thumbnail": "assets/images/vehicles/atlas-airplane_thumb.webp",
     "placeholder": "Avión alegre",
@@ -221,7 +242,10 @@
     "name": "Camión de trabajo",
     "category": "vehicles",
     "level": 2,
-    "grid": {"rows": 2, "columns": 2},
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
     "image": "assets/images/vehicles/atlas-truck.webp",
     "thumbnail": "assets/images/vehicles/atlas-truck_thumb.webp",
     "placeholder": "Camión de trabajo",
@@ -232,10 +256,41 @@
     "name": "Vehículos de emergencia",
     "category": "vehicles",
     "level": 4,
-    "grid": {"rows": 3, "columns": 3},
+    "grid": {
+      "rows": 3,
+      "columns": 3
+    },
     "image": "assets/images/vehicles/atlas-emergency-vehicles.webp",
     "thumbnail": "assets/images/vehicles/atlas-emergency-vehicles_thumb.webp",
     "placeholder": "Vehículos de emergencia",
+    "approved": true
+  },
+  {
+    "id": "atlas-vehicles-friends",
+    "name": "Vehículos amigos",
+    "category": "vehicles",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/vehicles/atlas-vehicles-friends.webp",
+    "thumbnail": "assets/images/vehicles/atlas-vehicles-friends_thumb.webp",
+    "placeholder": "Vehículos amigos",
+    "approved": true
+  },
+  {
+    "id": "atlas-princess-garden",
+    "name": "Princesa en el jardín",
+    "category": "princesses",
+    "level": 2,
+    "grid": {
+      "rows": 2,
+      "columns": 2
+    },
+    "image": "assets/images/princesses/atlas-princess-garden.webp",
+    "thumbnail": "assets/images/princesses/atlas-princess-garden_thumb.webp",
+    "placeholder": "Princesa en el jardín",
     "approved": true
   }
 ]

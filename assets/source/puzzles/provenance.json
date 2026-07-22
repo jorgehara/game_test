@@ -1,0 +1,460 @@
+{
+  "change": "puzzle-kids-cropped-assets-integration",
+  "generation": {
+    "cropPolicy": "center square crop from each root PNG, then Lanczos resize",
+    "format": "webp",
+    "fullSize": {
+      "height": 1024,
+      "width": 1024
+    },
+    "quality": 86,
+    "script": "assets/source/puzzles/generate_cropped_user_assets.py",
+    "thumbnailSize": {
+      "height": 256,
+      "width": 256
+    }
+  },
+  "policy": {
+    "catalogRuntimeMapping": "approved-in-pr2",
+    "emojiAssets": "forbidden",
+    "network": "forbidden",
+    "preSlicedPieces": "forbidden",
+    "publishedAtlasOverwrite": "approved-replacements-only",
+    "rootPngs": "local-staging-only"
+  },
+  "slice": "PR1+PR2",
+  "sources": [
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-astronaut",
+      "category": "space",
+      "cropBox": [
+        0,
+        64,
+        386,
+        450
+      ],
+      "full": {
+        "bytes": 83704,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/space/atlas-astronaut.webp",
+        "sha256": "e5e9100bac21412f5c2b75489d8ce2fe53691d168853ee6f5a194e1e4fa0b217"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-astronaut",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 356137,
+        "dimensions": {
+          "height": 514,
+          "width": 386
+        },
+        "format": "png",
+        "path": "assets/images/astro.png",
+        "sha256": "b0a9b7df6062ffa4e737a21cbf57e8b99c2f4a69007c7c4f6cf3352ffbf71276"
+      },
+      "sourceUri": "project-owned://assets/images/astro.png",
+      "thumbnail": {
+        "bytes": 16654,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/space/atlas-astronaut_thumb.webp",
+        "sha256": "a7d1413379b7fd2431a37ad67687bdc2cc61ea5ee52f90015add811e5222cc0a"
+      },
+      "rationale": "Replaces existing astronaut atlas art with approved user-provided astronaut source."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-vehicles-friends",
+      "category": "vehicles",
+      "cropBox": [
+        0,
+        65,
+        384,
+        449
+      ],
+      "full": {
+        "bytes": 91042,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/vehicles/atlas-vehicles-friends.webp",
+        "sha256": "a7389d7c76af9c835df0c8ceeff3eae92485eaba0d9086b47d7ff6c7bd2d6874"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-vehicles-friends",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 359044,
+        "dimensions": {
+          "height": 514,
+          "width": 384
+        },
+        "format": "png",
+        "path": "assets/images/camiones.png",
+        "sha256": "73b7661dae3ea89df359d9d696757be940a357263519f858d00f96da5b4f39b2"
+      },
+      "sourceUri": "project-owned://assets/images/camiones.png",
+      "thumbnail": {
+        "bytes": 17784,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/vehicles/atlas-vehicles-friends_thumb.webp",
+        "sha256": "c02016d97482ec5e7ecd85184bf9a182bf9716626dd8290e1b7ae6db042c204d"
+      },
+      "rationale": "New ID approved because plural friendly vehicles should not overwrite singular atlas-truck semantics."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-race-car",
+      "category": "vehicles",
+      "cropBox": [
+        0,
+        57,
+        385,
+        442
+      ],
+      "full": {
+        "bytes": 78294,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/vehicles/atlas-race-car.webp",
+        "sha256": "bd679e61d7de02603fbbcf3a875c8d2f3107665759d47bab9448b2593401b827"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-race-car",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 334029,
+        "dimensions": {
+          "height": 500,
+          "width": 385
+        },
+        "format": "png",
+        "path": "assets/images/car.png",
+        "sha256": "ace757f538d295ae8f7f3204860971238a357fa21085a8fb2117470dedd3af82"
+      },
+      "sourceUri": "project-owned://assets/images/car.png",
+      "thumbnail": {
+        "bytes": 15492,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/vehicles/atlas-race-car_thumb.webp",
+        "sha256": "9d5dabcd8997d85446b7e66e3c2c4c7f19b9cc548ece163caaa3aa8e93cfe7d1"
+      },
+      "rationale": "Replaces existing race-car atlas art with approved user-provided car source."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "castle-bright",
+      "category": "castles",
+      "cropBox": [
+        0,
+        64,
+        382,
+        446
+      ],
+      "full": {
+        "bytes": 76250,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/castles/castle-bright.webp",
+        "sha256": "aea98459df314ce9b61c8f0804f87e72a93d377ea0104e95f8fc22426a78907c"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "castle-bright",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 346052,
+        "dimensions": {
+          "height": 510,
+          "width": 382
+        },
+        "format": "png",
+        "path": "assets/images/castillo.png",
+        "sha256": "a8c52c3c7ebefca0a6b877e42027177771404b63bd59d7edffd261b0561657db"
+      },
+      "sourceUri": "project-owned://assets/images/castillo.png",
+      "thumbnail": {
+        "bytes": 15646,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/castles/castle-bright_thumb.webp",
+        "sha256": "6545a1ac8e873cdee16dc5bbaaab2f4bb1cbff160cd6daffd4bc77b6a77bb983"
+      },
+      "rationale": "Replaces existing castle-bright starter art with approved user-provided castle source."
+    },
+    {
+      "approvalGate": "approved: preserve existing published WebP/metadata; do not replace",
+      "approved": true,
+      "candidateId": "castillo-princesa",
+      "category": "castles",
+      "cropBox": [
+        140,
+        0,
+        1262,
+        1122
+      ],
+      "full": {
+        "path": "assets/images/castles/castillo-princesa.webp",
+        "dimensions": {
+          "width": 1024,
+          "height": 1024
+        },
+        "format": "webp",
+        "bytes": 131770,
+        "sha256": "92b69c509f6baac96d9348dea093259dcb4d058eefad6186e1db97277c9929fc"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "preserved-published",
+      "outputId": "castillo-princesa",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 2278614,
+        "dimensions": {
+          "height": 1122,
+          "width": 1402
+        },
+        "format": "png",
+        "path": "assets/images/castillo-princesa.png",
+        "sha256": "6e0c4cc8dea974f89e8d4f53312e904a1779e598d6fe5812f92917cb9a81fd44"
+      },
+      "sourceUri": "project-owned://assets/images/castillo-princesa.png",
+      "thumbnail": {
+        "path": "assets/images/castles/castillo-princesa_thumb.webp",
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "bytes": 14322,
+        "sha256": "8e446f9f0b86fd8a784ba8ef440b67deb53c6f6f64c4a1e7db611ad646cfd872"
+      },
+      "rationale": "Published castillo-princesa WebP and metadata are preserved by approved mapping."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-dinosaurs",
+      "category": "dinosaurs",
+      "cropBox": [
+        24,
+        0,
+        438,
+        414
+      ],
+      "full": {
+        "bytes": 118024,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/dinosaurs/atlas-dinosaurs.webp",
+        "sha256": "5e8a9493c7b357a193c860069beeb1841de12ccc05810313fe66df5b5a99806e"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-dinosaurs",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 428684,
+        "dimensions": {
+          "height": 414,
+          "width": 463
+        },
+        "format": "png",
+        "path": "assets/images/dinosaurios.png",
+        "sha256": "7117d632f9e0cdb567e65ad37585fff0fbd613c296bb013863261e0487b0c7b1"
+      },
+      "sourceUri": "project-owned://assets/images/dinosaurios.png",
+      "thumbnail": {
+        "bytes": 22794,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/dinosaurs/atlas-dinosaurs_thumb.webp",
+        "sha256": "c680f7effea8bf77840f94a038144a280e9820f222a523bf6d761e1a63878cf6"
+      },
+      "rationale": "Replaces existing dinosaurs atlas art with approved user-provided dinosaurs source."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-doctor",
+      "category": "professions",
+      "cropBox": [
+        0,
+        67,
+        374,
+        441
+      ],
+      "full": {
+        "bytes": 76936,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/professions/atlas-doctor.webp",
+        "sha256": "be264989048723f42fc4cd00e35818854b21e4a23328c0e4d4b0f245574023f9"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-doctor",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 339749,
+        "dimensions": {
+          "height": 509,
+          "width": 374
+        },
+        "format": "png",
+        "path": "assets/images/doctora.png",
+        "sha256": "eb3c899a792c561d1f6369a2a527b91af9606accf92f17ce25e31ad5ba12e080"
+      },
+      "sourceUri": "project-owned://assets/images/doctora.png",
+      "thumbnail": {
+        "bytes": 16044,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/professions/atlas-doctor_thumb.webp",
+        "sha256": "569501c8a87bd0ad595c0218a9fa063d3e246b73f54b22670888ff90bd782495"
+      },
+      "rationale": "Replaces existing doctor atlas art with approved user-provided doctor source."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-princess-garden",
+      "category": "princesses",
+      "cropBox": [
+        0,
+        64,
+        382,
+        446
+      ],
+      "full": {
+        "bytes": 86754,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/princesses/atlas-princess-garden.webp",
+        "sha256": "00428b8b7660d0050e512e9ab71b1ece5e94f07ac9b436b9dcfe97900535e607"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-princess-garden",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 360034,
+        "dimensions": {
+          "height": 510,
+          "width": 382
+        },
+        "format": "png",
+        "path": "assets/images/princesa.png",
+        "sha256": "62a3d1971f13475a1d61490ad914f78906ab2438d004e34b90d88c1def0a7aaa"
+      },
+      "sourceUri": "project-owned://assets/images/princesa.png",
+      "thumbnail": {
+        "bytes": 16960,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/princesses/atlas-princess-garden_thumb.webp",
+        "sha256": "9e7923f6c364106e7a19b4b0c158ae6413a3ba34c818ca0dbc255b413add00b4"
+      },
+      "rationale": "New ID approved because princess garden scene should not overwrite princess-crown semantics."
+    },
+    {
+      "approvalGate": "approved by project owner on 2026-07-22",
+      "approved": true,
+      "candidateId": "atlas-animals",
+      "category": "animals",
+      "cropBox": [
+        0,
+        67,
+        376,
+        443
+      ],
+      "full": {
+        "bytes": 109818,
+        "dimensions": {
+          "height": 1024,
+          "width": 1024
+        },
+        "format": "webp",
+        "path": "assets/images/animals/atlas-animals.webp",
+        "sha256": "b37ebd6e427746b27749ec27765251bf8b8931417b095f46dd50020191a6c337"
+      },
+      "license": "PROJECT-OWNED",
+      "mappingStatus": "approved",
+      "outputId": "atlas-animals",
+      "provenance": "user-provided",
+      "source": {
+        "bytes": 388313,
+        "dimensions": {
+          "height": 510,
+          "width": 376
+        },
+        "format": "png",
+        "path": "assets/images/animales.png",
+        "sha256": "f97ea935fd0571b48f9f1243f6acc26568b38aeabe44a0a8dbe9bcc6cdae3ef8"
+      },
+      "sourceUri": "project-owned://assets/images/animales.png",
+      "thumbnail": {
+        "bytes": 21946,
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "format": "webp",
+        "path": "assets/images/animals/atlas-animals_thumb.webp",
+        "sha256": "a075bfe7f87cb28e622aa7edd10c6775e5727f78ac9970fd37b6e2e2148752b3"
+      },
+      "rationale": "Replaces existing animals atlas art with approved user-provided animals source."
+    }
+  ]
+}

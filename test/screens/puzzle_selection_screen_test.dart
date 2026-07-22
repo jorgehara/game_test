@@ -40,7 +40,7 @@ void main() {
     );
     expect(
       _visibleAssetImageNames(tester),
-      contains('assets/images/castles/castle-bright_thumb.png'),
+      contains('assets/images/castles/castle-bright_thumb.webp'),
     );
 
     final playButton = find.widgetWithText(

@@ -193,7 +193,11 @@ void main() {
       );
       expect(
         starterPack
-            .where((puzzle) => puzzle.id != 'castillo-princesa')
+            .where(
+              (puzzle) =>
+                  puzzle.id != 'castillo-princesa' &&
+                  puzzle.id != 'castle-bright',
+            )
             .every((puzzle) => puzzle.imagePath.endsWith('.png')),
         isTrue,
       );
@@ -210,12 +214,14 @@ void main() {
         'atlas-airplane',
         'atlas-truck',
         'atlas-emergency-vehicles',
+        'atlas-vehicles-friends',
+        'atlas-princess-garden',
       };
       final atlasPuzzles = PuzzleCatalogService.all()
           .where((puzzle) => atlasIds.contains(puzzle.id))
           .toList(growable: false);
 
-      expect(atlasPuzzles, hasLength(9));
+      expect(atlasPuzzles, hasLength(11));
       expect(atlasPuzzles.map((puzzle) => puzzle.id).toSet(), atlasIds);
       expect(
         atlasPuzzles.every(
@@ -263,7 +269,7 @@ void main() {
           .where((puzzle) => puzzle.id.startsWith('atlas-'))
           .toList(growable: false);
 
-      expect(atlasPuzzles, hasLength(9));
+      expect(atlasPuzzles, hasLength(11));
       for (final puzzle in atlasPuzzles) {
         final approved = PuzzleCatalogService.approvedAssetFor(
           puzzle,
@@ -276,6 +282,67 @@ void main() {
         expect(approved.thumbnailPath, puzzle.thumbnailPath);
       }
     });
+
+    test(
+      'resolves PR2 approved mapping IDs exactly and falls back only invalid',
+      () {
+        final entries = _readManifest();
+        final existingPaths = _localImagePaths();
+        const expected = {
+          'atlas-astronaut': (PuzzleCategory.space, 4),
+          'atlas-vehicles-friends': (PuzzleCategory.vehicles, 2),
+          'atlas-race-car': (PuzzleCategory.vehicles, 4),
+          'castle-bright': (PuzzleCategory.castles, 2),
+          'castillo-princesa': (PuzzleCategory.castles, 2),
+          'atlas-dinosaurs': (PuzzleCategory.dinosaurs, 4),
+          'atlas-doctor': (PuzzleCategory.professions, 2),
+          'atlas-princess-garden': (PuzzleCategory.princesses, 2),
+          'atlas-animals': (PuzzleCategory.animals, 2),
+        };
+
+        for (final item in expected.entries) {
+          final puzzle = PuzzleCatalogService.all().singleWhere(
+            (puzzle) => puzzle.id == item.key,
+          );
+          final approved = PuzzleCatalogService.approvedAssetFor(
+            puzzle,
+            entries,
+            existingAssetPaths: existingPaths,
+          );
+
+          expect(puzzle.category, item.value.$1, reason: item.key);
+          expect(puzzle.difficulty.level, item.value.$2, reason: item.key);
+          expect(
+            puzzle.imagePath,
+            startsWith('assets/images/'),
+            reason: item.key,
+          );
+          expect(puzzle.imagePath, endsWith('.webp'), reason: item.key);
+          expect(
+            puzzle.thumbnailPath,
+            endsWith('_thumb.webp'),
+            reason: item.key,
+          );
+          expect(approved, isNotNull, reason: item.key);
+          expect(approved!.path, puzzle.imagePath, reason: item.key);
+          expect(
+            approved.thumbnailPath,
+            puzzle.thumbnailPath,
+            reason: item.key,
+          );
+
+          expect(
+            PuzzleCatalogService.approvedAssetFor(
+              puzzle,
+              entries,
+              existingAssetPaths: const {},
+            ),
+            isNull,
+            reason: '${item.key} missing local file must fall back',
+          );
+        }
+      },
+    );
 
     test(
       'validates catalog duplicates and invalid metadata deterministically',

@@ -1,23 +1,46 @@
 [
   {
     "id": "castle-bright",
-    "path": "assets/images/castles/castle-bright.png",
-    "thumbnailPath": "assets/images/castles/castle-bright_thumb.png",
-    "sourceTitle": "Puzzle Kids original vector illustration - Castillo brillante",
-    "sourceUrl": "project-owned://assets/source/puzzles/castle-bright.svg",
+    "path": "assets/images/castles/castle-bright.webp",
+    "thumbnailPath": "assets/images/castles/castle-bright_thumb.webp",
+    "category": "castles",
+    "sourceTitle": "User-provided project-owned artwork - Castillo brillante",
+    "sourceUrl": "project-owned://assets/images/castillo.png",
+    "sourceProvenance": "user-provided",
     "license": "PROJECT-OWNED",
     "licenseUrl": "project-owned://LICENSE",
-    "attribution": "Puzzle Kids PROJECT-OWNED original local vector artwork.",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/castillo.png.",
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
     "dimensions": {
-      "width": 512,
-      "height": 512
+      "height": 1024,
+      "width": 1024
     },
-    "format": "png",
-    "bytes": 4097,
-    "sha256": "48b56661b5f06706927067db4f4b9cdf3280d8ed89e8be22aec82b25349f6e79"
+    "format": "webp",
+    "bytes": 76250,
+    "sha256": "aea98459df314ce9b61c8f0804f87e72a93d377ea0104e95f8fc22426a78907c",
+    "thumbnail": {
+      "bytes": 15646,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/castles/castle-bright_thumb.webp",
+      "sha256": "6545a1ac8e873cdee16dc5bbaaab2f4bb1cbff160cd6daffd4bc77b6a77bb983"
+    },
+    "source": {
+      "bytes": 346052,
+      "dimensions": {
+        "height": 510,
+        "width": 382
+      },
+      "format": "png",
+      "path": "assets/images/castillo.png",
+      "sha256": "a8c52c3c7ebefca0a6b877e42027177771404b63bd59d7edffd261b0561657db"
+    },
+    "replacementRationale": "Replaces existing castle-bright starter art with approved user-provided castle source."
   },
   {
     "id": "castillo-princesa",
@@ -37,7 +60,30 @@
     },
     "format": "webp",
     "bytes": 131770,
-    "sha256": "92b69c509f6baac96d9348dea093259dcb4d058eefad6186e1db97277c9929fc"
+    "sha256": "92b69c509f6baac96d9348dea093259dcb4d058eefad6186e1db97277c9929fc",
+    "category": "castles",
+    "sourceProvenance": "user-provided",
+    "thumbnail": {
+      "path": "assets/images/castles/castillo-princesa_thumb.webp",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "bytes": 14322,
+      "sha256": "8e446f9f0b86fd8a784ba8ef440b67deb53c6f6f64c4a1e7db611ad646cfd872"
+    },
+    "source": {
+      "bytes": 2278614,
+      "dimensions": {
+        "height": 1122,
+        "width": 1402
+      },
+      "format": "png",
+      "path": "assets/images/castillo-princesa.png",
+      "sha256": "6e0c4cc8dea974f89e8d4f53312e904a1779e598d6fe5812f92917cb9a81fd44"
+    },
+    "replacementRationale": "Published castillo-princesa WebP and metadata are preserved by approved mapping."
   },
   {
     "id": "princess-crown",
@@ -203,35 +249,87 @@
     "id": "atlas-dinosaurs",
     "path": "assets/images/dinosaurs/atlas-dinosaurs.webp",
     "thumbnailPath": "assets/images/dinosaurs/atlas-dinosaurs_thumb.webp",
-    "sourceTitle": "User-provided project-owned atlas - varios-assets.png",
-    "sourceUrl": "project-owned://assets/images/varios-assets.png",
+    "category": "dinosaurs",
+    "sourceTitle": "User-provided project-owned artwork - Dinosaurios aventureros",
+    "sourceUrl": "project-owned://assets/images/dinosaurios.png",
+    "sourceProvenance": "user-provided",
     "license": "PROJECT-OWNED",
     "licenseUrl": "project-owned://LICENSE",
-    "attribution": "User/project owner confirmed ownership and authorized using/publishing derived Puzzle Kids atlas assets on 2026-07-22.",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/dinosaurios.png.",
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
     "format": "webp",
-    "bytes": 107054,
-    "sha256": "e6fb67cf3af14af53e0e2cb6ddf1f7a99e475aafe327cbf6e8513ad3e5196500"
+    "bytes": 118024,
+    "sha256": "5e8a9493c7b357a193c860069beeb1841de12ccc05810313fe66df5b5a99806e",
+    "thumbnail": {
+      "bytes": 22794,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/dinosaurs/atlas-dinosaurs_thumb.webp",
+      "sha256": "c680f7effea8bf77840f94a038144a280e9820f222a523bf6d761e1a63878cf6"
+    },
+    "source": {
+      "bytes": 428684,
+      "dimensions": {
+        "height": 414,
+        "width": 463
+      },
+      "format": "png",
+      "path": "assets/images/dinosaurios.png",
+      "sha256": "7117d632f9e0cdb567e65ad37585fff0fbd613c296bb013863261e0487b0c7b1"
+    },
+    "replacementRationale": "Replaces existing dinosaurs atlas art with approved user-provided dinosaurs source."
   },
   {
     "id": "atlas-race-car",
     "path": "assets/images/vehicles/atlas-race-car.webp",
     "thumbnailPath": "assets/images/vehicles/atlas-race-car_thumb.webp",
-    "sourceTitle": "User-provided project-owned atlas - varios-assets.png",
-    "sourceUrl": "project-owned://assets/images/varios-assets.png",
+    "category": "vehicles",
+    "sourceTitle": "User-provided project-owned artwork - Auto de carrera",
+    "sourceUrl": "project-owned://assets/images/car.png",
+    "sourceProvenance": "user-provided",
     "license": "PROJECT-OWNED",
     "licenseUrl": "project-owned://LICENSE",
-    "attribution": "User/project owner confirmed ownership and authorized using/publishing derived Puzzle Kids atlas assets on 2026-07-22.",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/car.png.",
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
     "format": "webp",
-    "bytes": 89344,
-    "sha256": "f4bde42398b750f494544c120db49ec41459e48425e72739498716ed428556d6"
+    "bytes": 78294,
+    "sha256": "bd679e61d7de02603fbbcf3a875c8d2f3107665759d47bab9448b2593401b827",
+    "thumbnail": {
+      "bytes": 15492,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/vehicles/atlas-race-car_thumb.webp",
+      "sha256": "9d5dabcd8997d85446b7e66e3c2c4c7f19b9cc548ece163caaa3aa8e93cfe7d1"
+    },
+    "source": {
+      "bytes": 334029,
+      "dimensions": {
+        "height": 500,
+        "width": 385
+      },
+      "format": "png",
+      "path": "assets/images/car.png",
+      "sha256": "ace757f538d295ae8f7f3204860971238a357fa21085a8fb2117470dedd3af82"
+    },
+    "replacementRationale": "Replaces existing race-car atlas art with approved user-provided car source."
   },
   {
     "id": "atlas-princess-castle",
@@ -245,7 +343,10 @@
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "width": 1024,
+      "height": 1024
+    },
     "format": "webp",
     "bytes": 109338,
     "sha256": "2ed970bbc6a00d564ae068cb80e64f594cb59f8a884e8392b7e033667aae63c5"
@@ -254,52 +355,130 @@
     "id": "atlas-doctor",
     "path": "assets/images/professions/atlas-doctor.webp",
     "thumbnailPath": "assets/images/professions/atlas-doctor_thumb.webp",
-    "sourceTitle": "User-provided project-owned atlas - varios-assets.png",
-    "sourceUrl": "project-owned://assets/images/varios-assets.png",
+    "category": "professions",
+    "sourceTitle": "User-provided project-owned artwork - Médica amable",
+    "sourceUrl": "project-owned://assets/images/doctora.png",
+    "sourceProvenance": "user-provided",
     "license": "PROJECT-OWNED",
     "licenseUrl": "project-owned://LICENSE",
-    "attribution": "User/project owner confirmed ownership and authorized using/publishing derived Puzzle Kids atlas assets on 2026-07-22.",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/doctora.png.",
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
     "format": "webp",
-    "bytes": 88796,
-    "sha256": "5589e7042b82c642e289ca55fc94791d68843cb871330636969f89570d7ecbb4"
+    "bytes": 76936,
+    "sha256": "be264989048723f42fc4cd00e35818854b21e4a23328c0e4d4b0f245574023f9",
+    "thumbnail": {
+      "bytes": 16044,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/professions/atlas-doctor_thumb.webp",
+      "sha256": "569501c8a87bd0ad595c0218a9fa063d3e246b73f54b22670888ff90bd782495"
+    },
+    "source": {
+      "bytes": 339749,
+      "dimensions": {
+        "height": 509,
+        "width": 374
+      },
+      "format": "png",
+      "path": "assets/images/doctora.png",
+      "sha256": "eb3c899a792c561d1f6369a2a527b91af9606accf92f17ce25e31ad5ba12e080"
+    },
+    "replacementRationale": "Replaces existing doctor atlas art with approved user-provided doctor source."
   },
   {
     "id": "atlas-astronaut",
     "path": "assets/images/space/atlas-astronaut.webp",
     "thumbnailPath": "assets/images/space/atlas-astronaut_thumb.webp",
-    "sourceTitle": "User-provided project-owned atlas - varios-assets.png",
-    "sourceUrl": "project-owned://assets/images/varios-assets.png",
+    "category": "space",
+    "sourceTitle": "User-provided project-owned artwork - Astronauta espacial",
+    "sourceUrl": "project-owned://assets/images/astro.png",
+    "sourceProvenance": "user-provided",
     "license": "PROJECT-OWNED",
     "licenseUrl": "project-owned://LICENSE",
-    "attribution": "User/project owner confirmed ownership and authorized using/publishing derived Puzzle Kids atlas assets on 2026-07-22.",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/astro.png.",
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
     "format": "webp",
-    "bytes": 86628,
-    "sha256": "6e80ea4818b5e3bf1777481fb925d24a9d74fc57380185210b46f94ea80ff59d"
+    "bytes": 83704,
+    "sha256": "e5e9100bac21412f5c2b75489d8ce2fe53691d168853ee6f5a194e1e4fa0b217",
+    "thumbnail": {
+      "bytes": 16654,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/space/atlas-astronaut_thumb.webp",
+      "sha256": "a7d1413379b7fd2431a37ad67687bdc2cc61ea5ee52f90015add811e5222cc0a"
+    },
+    "source": {
+      "bytes": 356137,
+      "dimensions": {
+        "height": 514,
+        "width": 386
+      },
+      "format": "png",
+      "path": "assets/images/astro.png",
+      "sha256": "b0a9b7df6062ffa4e737a21cbf57e8b99c2f4a69007c7c4f6cf3352ffbf71276"
+    },
+    "replacementRationale": "Replaces existing astronaut atlas art with approved user-provided astronaut source."
   },
   {
     "id": "atlas-animals",
     "path": "assets/images/animals/atlas-animals.webp",
     "thumbnailPath": "assets/images/animals/atlas-animals_thumb.webp",
-    "sourceTitle": "User-provided project-owned atlas - varios-assets.png",
-    "sourceUrl": "project-owned://assets/images/varios-assets.png",
+    "category": "animals",
+    "sourceTitle": "User-provided project-owned artwork - Animales amigos",
+    "sourceUrl": "project-owned://assets/images/animales.png",
+    "sourceProvenance": "user-provided",
     "license": "PROJECT-OWNED",
     "licenseUrl": "project-owned://LICENSE",
-    "attribution": "User/project owner confirmed ownership and authorized using/publishing derived Puzzle Kids atlas assets on 2026-07-22.",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/animales.png.",
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
     "format": "webp",
-    "bytes": 117614,
-    "sha256": "74fcaa2943ecabb8a884169ee8f14652dd47262baef18f53df4c0132801b10de"
+    "bytes": 109818,
+    "sha256": "b37ebd6e427746b27749ec27765251bf8b8931417b095f46dd50020191a6c337",
+    "thumbnail": {
+      "bytes": 21946,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/animals/atlas-animals_thumb.webp",
+      "sha256": "a075bfe7f87cb28e622aa7edd10c6775e5727f78ac9970fd37b6e2e2148752b3"
+    },
+    "source": {
+      "bytes": 388313,
+      "dimensions": {
+        "height": 510,
+        "width": 376
+      },
+      "format": "png",
+      "path": "assets/images/animales.png",
+      "sha256": "f97ea935fd0571b48f9f1243f6acc26568b38aeabe44a0a8dbe9bcc6cdae3ef8"
+    },
+    "replacementRationale": "Replaces existing animals atlas art with approved user-provided animals source."
   },
   {
     "id": "atlas-airplane",
@@ -313,7 +492,10 @@
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "width": 1024,
+      "height": 1024
+    },
     "format": "webp",
     "bytes": 71394,
     "sha256": "97d853fc652eecec301eced8602a8d115c7f2063c659d53b1a47e1f3547847df"
@@ -330,7 +512,10 @@
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "width": 1024,
+      "height": 1024
+    },
     "format": "webp",
     "bytes": 88782,
     "sha256": "51a233923340aaa31c075f1fa219577974ef85dd6017946bce978721beb274d0"
@@ -347,9 +532,98 @@
     "approved": true,
     "approvedBy": "Puzzle Kids project owner",
     "approvedAt": "2026-07-22T00:00:00Z",
-    "dimensions": {"width": 1024, "height": 1024},
+    "dimensions": {
+      "width": 1024,
+      "height": 1024
+    },
     "format": "webp",
     "bytes": 99176,
     "sha256": "03c8506e698215d5d4b4e8be995140efc306122f7a8531d7412dbfdc57bbda29"
+  },
+  {
+    "id": "atlas-vehicles-friends",
+    "path": "assets/images/vehicles/atlas-vehicles-friends.webp",
+    "thumbnailPath": "assets/images/vehicles/atlas-vehicles-friends_thumb.webp",
+    "category": "vehicles",
+    "sourceTitle": "User-provided project-owned artwork - Vehículos amigos",
+    "sourceUrl": "project-owned://assets/images/camiones.png",
+    "sourceProvenance": "user-provided",
+    "license": "PROJECT-OWNED",
+    "licenseUrl": "project-owned://LICENSE",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/camiones.png.",
+    "approved": true,
+    "approvedBy": "Puzzle Kids project owner",
+    "approvedAt": "2026-07-22T00:00:00Z",
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
+    "format": "webp",
+    "bytes": 91042,
+    "sha256": "a7389d7c76af9c835df0c8ceeff3eae92485eaba0d9086b47d7ff6c7bd2d6874",
+    "thumbnail": {
+      "bytes": 17784,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/vehicles/atlas-vehicles-friends_thumb.webp",
+      "sha256": "c02016d97482ec5e7ecd85184bf9a182bf9716626dd8290e1b7ae6db042c204d"
+    },
+    "source": {
+      "bytes": 359044,
+      "dimensions": {
+        "height": 514,
+        "width": 384
+      },
+      "format": "png",
+      "path": "assets/images/camiones.png",
+      "sha256": "73b7661dae3ea89df359d9d696757be940a357263519f858d00f96da5b4f39b2"
+    },
+    "replacementRationale": "New ID approved because plural friendly vehicles should not overwrite singular atlas-truck semantics."
+  },
+  {
+    "id": "atlas-princess-garden",
+    "path": "assets/images/princesses/atlas-princess-garden.webp",
+    "thumbnailPath": "assets/images/princesses/atlas-princess-garden_thumb.webp",
+    "category": "princesses",
+    "sourceTitle": "User-provided project-owned artwork - Princesa en el jardín",
+    "sourceUrl": "project-owned://assets/images/princesa.png",
+    "sourceProvenance": "user-provided",
+    "license": "PROJECT-OWNED",
+    "licenseUrl": "project-owned://LICENSE",
+    "attribution": "User-provided PROJECT-OWNED artwork for Puzzle Kids; optimized offline from local original assets/images/princesa.png.",
+    "approved": true,
+    "approvedBy": "Puzzle Kids project owner",
+    "approvedAt": "2026-07-22T00:00:00Z",
+    "dimensions": {
+      "height": 1024,
+      "width": 1024
+    },
+    "format": "webp",
+    "bytes": 86754,
+    "sha256": "00428b8b7660d0050e512e9ab71b1ece5e94f07ac9b436b9dcfe97900535e607",
+    "thumbnail": {
+      "bytes": 16960,
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "format": "webp",
+      "path": "assets/images/princesses/atlas-princess-garden_thumb.webp",
+      "sha256": "9e7923f6c364106e7a19b4b0c158ae6413a3ba34c818ca0dbc255b413add00b4"
+    },
+    "source": {
+      "bytes": 360034,
+      "dimensions": {
+        "height": 510,
+        "width": 382
+      },
+      "format": "png",
+      "path": "assets/images/princesa.png",
+      "sha256": "62a3d1971f13475a1d61490ad914f78906ab2438d004e34b90d88c1def0a7aaa"
+    },
+    "replacementRationale": "New ID approved because princess garden scene should not overwrite princess-crown semantics."
   }
 ]

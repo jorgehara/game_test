@@ -58,6 +58,7 @@ class PuzzleCatalogService {
       name: 'Castillo brillante',
       category: PuzzleCategory.castles,
       placeholderLabel: 'Castillo con torres redondas',
+      imageExtension: 'webp',
     ),
     _puzzle(
       id: 'castillo-princesa',
@@ -184,6 +185,13 @@ class PuzzleCatalogService {
       imageExtension: 'webp',
     ),
     _puzzle(
+      id: 'atlas-princess-garden',
+      name: 'Princesa en el jardín',
+      category: PuzzleCategory.princesses,
+      placeholderLabel: 'Princesa en el jardín',
+      imageExtension: 'webp',
+    ),
+    _puzzle(
       id: 'atlas-airplane',
       name: 'Avión alegre',
       category: PuzzleCategory.vehicles,
@@ -193,6 +201,13 @@ class PuzzleCatalogService {
       id: 'atlas-truck',
       name: 'Camión de trabajo',
       category: PuzzleCategory.vehicles,
+      imageExtension: 'webp',
+    ),
+    _puzzle(
+      id: 'atlas-vehicles-friends',
+      name: 'Vehículos amigos',
+      category: PuzzleCategory.vehicles,
+      placeholderLabel: 'Vehículos amigos',
       imageExtension: 'webp',
     ),
     _puzzle(

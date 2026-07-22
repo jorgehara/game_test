@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,8 +14,8 @@ void main() {
           .where((entry) => (entry['id'] as String).startsWith('atlas-'))
           .toList(growable: false);
 
-      expect(manifest, hasLength(19));
-      expect(atlas, hasLength(9));
+      expect(manifest, hasLength(21));
+      expect(atlas, hasLength(11));
       expect(
         manifest.every((entry) => entry['license'] == 'PROJECT-OWNED'),
         isTrue,
@@ -35,9 +36,9 @@ void main() {
       expect(manifest.map((entry) => entry['format']).toSet(), {'png', 'webp'});
       expect(
         atlas.every(
-          (entry) =>
-              entry['sourceUrl'] ==
-              'project-owned://assets/images/varios-assets.png',
+          (entry) => (entry['sourceUrl'] as String).startsWith(
+            'project-owned://assets/images/',
+          ),
         ),
         isTrue,
       );
@@ -85,13 +86,13 @@ void main() {
         totalBytes += full.lengthSync() + thumbnail.lengthSync();
       }
 
-      expect(fullPaths, hasLength(19));
-      expect(thumbnailPaths, hasLength(19));
-      expect(atlasFullBytes, 858126);
-      expect(atlasThumbnailBytes, 174656);
-      expect(totalBytes, 1231513);
-      expect(_read(root, 'README.md'), contains('1,231,513 bytes'));
-      expect(_read(root, 'NOTICE'), contains('1,231,513 bytes'));
+      expect(fullPaths, hasLength(21));
+      expect(thumbnailPaths, hasLength(21));
+      expect(atlasFullBytes, 1013262);
+      expect(atlasThumbnailBytes, 201966);
+      expect(totalBytes, 1500020);
+      expect(_read(root, 'README.md'), contains('1,500,020 bytes'));
+      expect(_read(root, 'NOTICE'), contains('1,500,020 bytes'));
 
       final castillo = manifest.singleWhere(
         (entry) => entry['id'] == 'castillo-princesa',
@@ -151,16 +152,12 @@ void main() {
 
     test('keeps release packaging assumptions offline', () {
       final pubspec = _read(root, 'pubspec.yaml');
+      final pubspecAssets = _pubspecAssets(root);
       expect(pubspec, contains('- assets/catalog/'));
-      expect(pubspec, contains('- assets/images/'));
-      expect(
-        pubspec,
-        contains('- assets/images/castles/castillo-princesa.webp'),
-      );
-      expect(
-        pubspec,
-        contains('- assets/images/castles/castillo-princesa_thumb.webp'),
-      );
+      expect(pubspecAssets, isNot(contains('assets/images/')));
+      expect(pubspec, contains('- assets/images/castles/'));
+      expect(pubspec, contains('- assets/images/vehicles/'));
+      expect(pubspec, contains('- assets/images/professions/'));
       expect(pubspec, isNot(contains('varios-assets.png')));
 
       final mainManifest = _read(
@@ -209,15 +206,163 @@ void main() {
       );
     });
 
+    test('keeps cropped user PNGs staging-only and out of bundle policy', () {
+      const rootStagingPngs = {
+        'astro.png',
+        'camiones.png',
+        'car.png',
+        'castillo.png',
+        'castillo-princesa.png',
+        'dinosaurios.png',
+        'doctora.png',
+        'princesa.png',
+        'animales.png',
+      };
+
+      final gitignore = _read(root, '.gitignore');
+      final pubspec = _read(root, 'pubspec.yaml');
+      final pubspecAssets = _pubspecAssets(root);
+      final provenance = _croppedProvenance(root);
+      final sources = (provenance['sources'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
+
+      expect(sources, hasLength(9));
+      expect(pubspecAssets, isNot(contains('assets/images/')));
+      expect(gitignore, contains('assets/images/varios assets.png'));
+      expect(pubspec, isNot(contains('assets/images/varios assets.png')));
+      for (final name in rootStagingPngs) {
+        expect(gitignore, contains('assets/images/$name'), reason: name);
+        expect(pubspec, isNot(contains('assets/images/$name')), reason: name);
+      }
+
+      expect(
+        sources.map((entry) => entry['source']['path']).toSet(),
+        rootStagingPngs.map((name) => 'assets/images/$name').toSet(),
+      );
+      expect(
+        sources.every((entry) => entry['provenance'] == 'user-provided'),
+        isTrue,
+      );
+      expect(
+        sources.every(
+          (entry) => (entry['sourceUri'] as String).startsWith(
+            'project-owned://assets/images/',
+          ),
+        ),
+        isTrue,
+      );
+      expect(
+        sources.where((entry) => entry['mappingStatus'] == 'approved'),
+        hasLength(8),
+      );
+      expect(
+        sources.where(
+          (entry) => entry['mappingStatus'] == 'preserved-published',
+        ),
+        hasLength(1),
+      );
+    });
+
+    test(
+      'records PR2 promoted derivative inventory with runtime catalog mapping',
+      () {
+        final provenance = _croppedProvenance(root);
+        final sources = (provenance['sources'] as List<dynamic>)
+            .cast<Map<String, dynamic>>();
+        final manifest = _assetManifest(root);
+        final puzzles = _puzzles(root);
+        const expectedRuntimeIds = {
+          'astro.png': ('atlas-astronaut', 'space'),
+          'camiones.png': ('atlas-vehicles-friends', 'vehicles'),
+          'car.png': ('atlas-race-car', 'vehicles'),
+          'castillo.png': ('castle-bright', 'castles'),
+          'castillo-princesa.png': ('castillo-princesa', 'castles'),
+          'dinosaurios.png': ('atlas-dinosaurs', 'dinosaurs'),
+          'doctora.png': ('atlas-doctor', 'professions'),
+          'princesa.png': ('atlas-princess-garden', 'princesses'),
+          'animales.png': ('atlas-animals', 'animals'),
+        };
+        final fullPaths = <String>{};
+        final thumbnailPaths = <String>{};
+
+        for (final entry in sources) {
+          final source = entry['source'] as Map<String, dynamic>;
+          final full = entry['full'] as Map<String, dynamic>;
+          final thumbnail = entry['thumbnail'] as Map<String, dynamic>;
+          final sourceName = (source['path'] as String).split('/').last;
+          final expected = expectedRuntimeIds[sourceName];
+          final manifestEntry = manifest.singleWhere(
+            (item) => item['id'] == expected?.$1,
+            orElse: () => fail('Missing manifest entry for $sourceName'),
+          );
+          final puzzle = puzzles.singleWhere(
+            (item) => item['id'] == expected?.$1,
+            orElse: () => fail('Missing puzzle catalog entry for $sourceName'),
+          );
+
+          fullPaths.add(full['path'] as String);
+          thumbnailPaths.add(thumbnail['path'] as String);
+
+          expect(expected, isNotNull, reason: sourceName);
+          expect(entry['outputId'], expected!.$1, reason: sourceName);
+          expect(entry['category'], expected.$2, reason: sourceName);
+          expect(full['path'], startsWith('assets/images/'));
+          expect(full['path'], isNot(endsWith('-pending.webp')));
+          expect(thumbnail['path'], isNot(endsWith('-pending_thumb.webp')));
+          expect(full['format'], 'webp');
+          expect(thumbnail['format'], 'webp');
+          expect(full['dimensions'], {'width': 1024, 'height': 1024});
+          expect(thumbnail['dimensions'], {'width': 256, 'height': 256});
+          _expectExactFileMetadata(root, source, format: 'png');
+          _expectExactFileMetadata(root, full, format: 'webp');
+          _expectExactFileMetadata(root, thumbnail, format: 'webp');
+          expect(manifestEntry['path'], full['path'], reason: sourceName);
+          expect(
+            manifestEntry['thumbnailPath'],
+            thumbnail['path'],
+            reason: sourceName,
+          );
+          expect(manifestEntry['sourceUrl'], entry['sourceUri']);
+          expect(manifestEntry['sourceProvenance'], 'user-provided');
+          expect(manifestEntry['category'], expected.$2, reason: sourceName);
+          expect(manifestEntry['bytes'], full['bytes'], reason: sourceName);
+          expect(manifestEntry['sha256'], full['sha256'], reason: sourceName);
+          expect(
+            manifestEntry['thumbnail']['bytes'],
+            thumbnail['bytes'],
+            reason: sourceName,
+          );
+          expect(puzzle['image'], full['path'], reason: sourceName);
+          expect(puzzle['thumbnail'], thumbnail['path'], reason: sourceName);
+          expect(puzzle['category'], expected.$2, reason: sourceName);
+        }
+
+        expect(sources, hasLength(expectedRuntimeIds.length));
+        expect(fullPaths, hasLength(9));
+        expect(thumbnailPaths, hasLength(9));
+        expect(fullPaths.length + thumbnailPaths.length, 18);
+        expect(
+          fullPaths.contains('assets/images/castles/castillo-princesa.webp'),
+          isTrue,
+        );
+        expect(fullPaths.any((path) => path.contains('_piece')), isFalse);
+
+        final catalog = _read(root, 'assets/catalog/asset_licenses.json');
+        expect(catalog, isNot(contains('-pending.webp')));
+        expect(catalog, contains('project-owned://assets/images/astro.png'));
+      },
+    );
+
     test('does not ship runtime atlas cropping or pre-sliced piece assets', () {
       final generatedAtlasAssets = Directory('${root.path}/assets/images')
           .listSync(recursive: true)
           .whereType<File>()
           .map((file) => file.path.replaceAll(r'\', '/'))
           .where((path) => path.contains('/atlas-'))
+          .where((path) => !path.contains('-pending'))
           .toList(growable: false);
 
-      expect(generatedAtlasAssets, hasLength(18));
+      expect(generatedAtlasAssets, hasLength(22));
       expect(
         generatedAtlasAssets.every((path) => path.endsWith('.webp')),
         isTrue,
@@ -249,6 +394,45 @@ void main() {
       expect(tileSource, isNot(contains('Image.network')));
       expect(tileSource, isNot(contains('NetworkImage')));
     });
+
+    test('documents deterministic rollback and preserves published assets', () {
+      final replacements = _read(
+        root,
+        'assets/source/puzzles/atlas-replacements.md',
+      );
+      const expectedRows = {
+        'atlas-astronaut': 'astro.png',
+        'atlas-dinosaurs': 'dinosaurios.png',
+        'atlas-doctor': 'doctora.png',
+        'atlas-race-car': 'car.png',
+        'castle-bright': 'castillo.png',
+        'atlas-animals': 'animales.png',
+        'atlas-vehicles-friends': 'camiones.png',
+        'atlas-princess-garden': 'princesa.png',
+        'castillo-princesa': 'castillo-princesa.png',
+      };
+
+      expect(replacements, contains('Base/reference: `3d98dcb`'));
+      expect(replacements, contains('git checkout 3d98dcb'));
+      expect(
+        replacements,
+        contains(
+          'Unrelated atlas entries intentionally unchanged: `atlas-airplane`, `atlas-truck`, `atlas-emergency-vehicles`, `atlas-princess-castle`.',
+        ),
+      );
+      for (final row in expectedRows.entries) {
+        expect(replacements, contains('`${row.key}`'), reason: row.key);
+        expect(replacements, contains(row.value), reason: row.key);
+      }
+      expect(replacements, contains('preserve published asset'));
+      expect(replacements, contains('unchanged'));
+      expect(
+        replacements,
+        contains(
+          '92b69c509f6baac96d9348dea093259dcb4d058eefad6186e1db97277c9929fc',
+        ),
+      );
+    });
   });
 }
 
@@ -266,6 +450,37 @@ Map<String, dynamic> _atlasMetadata(Directory root) {
       as Map<String, dynamic>;
 }
 
+Map<String, dynamic> _croppedProvenance(Directory root) {
+  return jsonDecode(_read(root, 'assets/source/puzzles/provenance.json'))
+      as Map<String, dynamic>;
+}
+
+List<Map<String, dynamic>> _puzzles(Directory root) {
+  final decoded =
+      jsonDecode(_read(root, 'assets/catalog/puzzles.json')) as List<dynamic>;
+  return decoded.cast<Map<String, dynamic>>();
+}
+
+void _expectExactFileMetadata(
+  Directory root,
+  Map<String, dynamic> metadata, {
+  required String format,
+}) {
+  final file = File('${root.path}/${metadata['path']}');
+  expect(file.existsSync(), isTrue, reason: metadata['path'] as String);
+  expect(metadata['format'], format, reason: metadata['path'] as String);
+  expect(
+    metadata['bytes'],
+    file.lengthSync(),
+    reason: metadata['path'] as String,
+  );
+  expect(
+    metadata['sha256'],
+    sha256.convert(file.readAsBytesSync()).toString(),
+    reason: metadata['path'] as String,
+  );
+}
+
 String _dartSource(Directory root) {
   final lib = Directory('${root.path}/lib');
   return lib
@@ -274,6 +489,33 @@ String _dartSource(Directory root) {
       .where((file) => file.path.endsWith('.dart'))
       .map((file) => file.readAsStringSync())
       .join('\n');
+}
+
+Set<String> _pubspecAssets(Directory root) {
+  final assets = <String>{};
+  var inFlutter = false;
+  var inAssets = false;
+  for (final line in File('${root.path}/pubspec.yaml').readAsLinesSync()) {
+    if (line.startsWith('flutter:')) {
+      inFlutter = true;
+      inAssets = false;
+      continue;
+    }
+    if (!inFlutter) continue;
+    if (line.startsWith('  assets:')) {
+      inAssets = true;
+      continue;
+    }
+    if (inAssets) {
+      final trimmed = line.trim();
+      if (trimmed.startsWith('- ')) {
+        assets.add(trimmed.substring(2));
+      } else if (trimmed.isNotEmpty && !trimmed.startsWith('#')) {
+        break;
+      }
+    }
+  }
+  return assets;
 }
 
 String _read(Directory root, String path) =>

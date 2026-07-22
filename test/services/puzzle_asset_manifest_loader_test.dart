@@ -10,8 +10,19 @@ void main() {
   group('PuzzleAssetManifestLoader', () {
     test('loads only approved local bundled manifest entries', () async {
       final entries = await PuzzleAssetManifestLoader.loadApproved();
+      const mappedIds = {
+        'atlas-astronaut',
+        'atlas-vehicles-friends',
+        'atlas-race-car',
+        'castle-bright',
+        'castillo-princesa',
+        'atlas-dinosaurs',
+        'atlas-doctor',
+        'atlas-princess-garden',
+        'atlas-animals',
+      };
 
-      expect(entries, hasLength(19));
+      expect(entries, hasLength(21));
       expect(entries.every((entry) => entry.approved), isTrue);
       expect(
         entries.every(
@@ -20,6 +31,22 @@ void main() {
         isTrue,
       );
       expect(entries.every((entry) => entry.thumbnailPath != null), isTrue);
+      expect(
+        entries.where((entry) => mappedIds.contains(entry.id)),
+        hasLength(9),
+      );
+      for (final entry in entries.where(
+        (entry) => mappedIds.contains(entry.id),
+      )) {
+        expect(entry.path, startsWith('assets/images/'), reason: entry.id);
+        expect(entry.path, endsWith('.webp'), reason: entry.id);
+        expect(entry.thumbnailPath, endsWith('_thumb.webp'), reason: entry.id);
+        expect(entry.width, 1024, reason: entry.id);
+        expect(entry.height, 1024, reason: entry.id);
+        expect(entry.format, 'webp', reason: entry.id);
+        expect(entry.sourceUrl, startsWith('project-owned://assets/images/'));
+        expect(entry.sha256, matches(RegExp(r'^[0-9a-f]{64}$')));
+      }
     });
 
     test('filters unapproved entries from the runtime manifest', () async {

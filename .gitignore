@@ -43,3 +43,15 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Puzzle Kids local staging inputs (PR1: generated derivatives only)
+assets/images/varios assets.png
+assets/images/astro.png
+assets/images/camiones.png
+assets/images/car.png
+assets/images/castillo.png
+assets/images/castillo-princesa.png
+assets/images/dinosaurios.png
+assets/images/doctora.png
+assets/images/princesa.png
+assets/images/animales.png

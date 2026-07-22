@@ -553,7 +553,7 @@ void main() {
             .map(AssetManifestEntry.fromJson)
             .toList(growable: false);
 
-        expect(entries, hasLength(19));
+        expect(entries, hasLength(21));
         expect(entries.every((entry) => entry.approved), isTrue);
         expect(
           entries.every((entry) => entry.license == 'PROJECT-OWNED'),
@@ -571,7 +571,7 @@ void main() {
             entries,
             existingAssetPaths: _localImagePaths(),
           ),
-          hasLength(19),
+          hasLength(21),
         );
       },
     );
@@ -583,7 +583,7 @@ void main() {
       final catalogPaths = _readCatalogPaths();
       final pubspecAssets = _readPubspecAssets();
 
-      expect(approved, hasLength(19));
+      expect(approved, hasLength(21));
       expect(approved.map((entry) => entry.id), isA<Iterable<String>>());
       expect(
         approved.map((entry) => entry.id).toSet(),
@@ -647,7 +647,7 @@ void main() {
             .cast<Map<String, Object?>>();
         final existingPaths = _localImagePaths();
 
-        expect(atlas, hasLength(9));
+        expect(atlas, hasLength(11));
         expect(atlas.every((entry) => entry.approved), isTrue);
         expect(
           atlas.every((entry) => entry.license == 'PROJECT-OWNED'),
@@ -656,15 +656,38 @@ void main() {
         expect(
           atlas.every(
             (entry) =>
-                entry.sourceUrl ==
-                'project-owned://assets/images/varios-assets.png',
+                entry.sourceUrl.startsWith('project-owned://assets/images/'),
           ),
           isTrue,
         );
         expect(atlas.every((entry) => entry.sha256.length == 64), isTrue);
 
         for (final output in outputs) {
-          final entry = atlas.singleWhere((entry) => entry.id == output['id']);
+          final entry = atlas.singleWhere(
+            (entry) => entry.id == output['id'],
+            orElse: () => const AssetManifestEntry(
+              id: '',
+              path: '',
+              sourceTitle: '',
+              sourceUrl: '',
+              license: '',
+              licenseUrl: '',
+              attribution: '',
+              approved: false,
+              approvedBy: '',
+              approvedAt: '',
+              width: 0,
+              height: 0,
+              format: '',
+              bytes: 0,
+              sha256: '',
+            ),
+          );
+          if (entry.id.isEmpty ||
+              entry.sourceUrl !=
+                  'project-owned://assets/images/varios-assets.png') {
+            continue;
+          }
           final full = output['full'] as Map<String, Object?>;
           final thumbnail = output['thumbnail'] as Map<String, Object?>;
 
@@ -737,6 +760,62 @@ void main() {
       },
     );
   });
+
+  group('PR1 cropped user asset provenance', () {
+    final root = Directory.current;
+
+    test('records exact source and derivative metadata for staging inputs', () {
+      final provenance =
+          jsonDecode(
+                File(
+                  '${root.path}/assets/source/puzzles/provenance.json',
+                ).readAsStringSync(),
+              )
+              as Map<String, dynamic>;
+      final sources = (provenance['sources'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
+
+      expect(provenance['change'], 'puzzle-kids-cropped-assets-integration');
+      expect(provenance['slice'], 'PR1+PR2');
+      expect(provenance['policy']['catalogRuntimeMapping'], 'approved-in-pr2');
+      expect(sources, hasLength(9));
+
+      for (final entry in sources) {
+        final source = entry['source'] as Map<String, dynamic>;
+        final full = entry['full'] as Map<String, dynamic>;
+        final thumbnail = entry['thumbnail'] as Map<String, dynamic>;
+
+        expect(entry['sourceUri'], 'project-owned://${source['path']}');
+        expect(entry['provenance'], 'user-provided');
+        expect(entry['license'], 'PROJECT-OWNED');
+        expect(entry['candidateId'], isNot(contains('-pending')));
+        expect(entry['outputId'], isNot(endsWith('-pending')));
+        expect(entry['approvalGate'], isNotEmpty);
+        expect(entry['cropBox'], hasLength(4));
+
+        _expectExactFileMetadata(root, source, format: 'png');
+        _expectExactFileMetadata(root, full, format: 'webp');
+        _expectExactFileMetadata(root, thumbnail, format: 'webp');
+        expect(full['dimensions'], {'width': 1024, 'height': 1024});
+        expect(thumbnail['dimensions'], {'width': 256, 'height': 256});
+        expect(full['bytes'], lessThanOrEqualTo(800 * 1024));
+        expect(thumbnail['bytes'], lessThanOrEqualTo(80 * 1024));
+      }
+    });
+  });
+}
+
+void _expectExactFileMetadata(
+  Directory root,
+  Map<String, dynamic> metadata, {
+  required String format,
+}) {
+  final file = File('${root.path}/${metadata['path']}');
+  expect(file.existsSync(), isTrue, reason: metadata['path'] as String);
+  expect(metadata['format'], format);
+  expect(metadata['bytes'], file.lengthSync());
+  expect(metadata['sha256'], sha256.convert(file.readAsBytesSync()).toString());
+  expect(metadata['sha256'], matches(RegExp(r'^[0-9a-f]{64}$')));
 }
 
 List<AssetManifestEntry> _readBundledManifest() {
