@@ -2,40 +2,52 @@
   {
     "id": "castle-bright",
     "path": "assets/images/castles/castle-bright.webp",
-    "origin": "sample-only-no-binary-bundled",
+    "thumbnailPath": "assets/images/castles/castle-bright_thumb.webp",
+    "sourceTitle": "Sample metadata only - no binary bundled",
+    "sourceUrl": "sample-only-no-binary-bundled",
     "license": "UNAPPROVED-SAMPLE",
+    "licenseUrl": "sample-only-no-license",
     "attribution": "Sample manifest metadata only; not approved for rendering.",
     "approved": false,
     "approvedBy": "",
     "approvedAt": "",
     "dimensions": { "width": 1024, "height": 1024 },
     "format": "webp",
-    "bytes": 320000
+    "bytes": 320000,
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   {
     "id": "princess-crown",
     "path": "assets/images/princesses/princess-crown.webp",
-    "origin": "sample-only-no-binary-bundled",
+    "thumbnailPath": "assets/images/princesses/princess-crown_thumb.webp",
+    "sourceTitle": "Sample metadata only - no binary bundled",
+    "sourceUrl": "sample-only-no-binary-bundled",
     "license": "UNAPPROVED-SAMPLE",
+    "licenseUrl": "sample-only-no-license",
     "attribution": "Sample manifest metadata only; not approved for rendering.",
     "approved": false,
     "approvedBy": "",
     "approvedAt": "",
     "dimensions": { "width": 1024, "height": 1024 },
     "format": "webp",
-    "bytes": 320000
+    "bytes": 320000,
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   {
     "id": "unicorn-cloud",
     "path": "assets/images/unicorns/unicorn-cloud.webp",
-    "origin": "sample-only-no-binary-bundled",
+    "thumbnailPath": "assets/images/unicorns/unicorn-cloud_thumb.webp",
+    "sourceTitle": "Sample metadata only - no binary bundled",
+    "sourceUrl": "sample-only-no-binary-bundled",
     "license": "UNAPPROVED-SAMPLE",
+    "licenseUrl": "sample-only-no-license",
     "attribution": "Sample manifest metadata only; not approved for rendering.",
     "approved": false,
     "approvedBy": "",
     "approvedAt": "",
     "dimensions": { "width": 1024, "height": 1024 },
     "format": "webp",
-    "bytes": 320000
+    "bytes": 320000,
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   }
 ]

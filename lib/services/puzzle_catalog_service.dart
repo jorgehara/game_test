@@ -162,11 +162,12 @@ class PuzzleCatalogService {
 
   static void _validateInertPath(Puzzle puzzle, String path, String fieldName) {
     final expectedPrefix = 'assets/images/${puzzle.category.id}/';
-    if (!path.startsWith(expectedPrefix) || !path.endsWith('.png')) {
+    final allowedExtension = path.endsWith('.png') || path.endsWith('.webp');
+    if (!path.startsWith(expectedPrefix) || !allowedExtension) {
       throw ArgumentError.value(
         path,
         fieldName,
-        'Image path must be inert category metadata under assets/images',
+        'Image path must be inert PNG/WebP category metadata under assets/images',
       );
     }
   }
@@ -181,13 +182,19 @@ class PuzzleCatalogService {
     final grid = level == 4
         ? GridSpec(rows: 3, columns: 3)
         : GridSpec(rows: 2, columns: 2);
+    final usesWebP = {
+      PuzzleCategory.castles,
+      PuzzleCategory.princesses,
+      PuzzleCategory.unicorns,
+    }.contains(category);
+    final extension = usesWebP ? 'webp' : 'png';
 
     return Puzzle(
       id: id,
       name: name,
       category: category,
-      imagePath: 'assets/images/${category.id}/$id.png',
-      thumbnailPath: 'assets/images/${category.id}/${id}_thumb.png',
+      imagePath: 'assets/images/${category.id}/$id.$extension',
+      thumbnailPath: 'assets/images/${category.id}/${id}_thumb.$extension',
       difficulty: PuzzleDifficulty.level(level),
       grid: grid,
       placeholderSeed: id.hashCode,

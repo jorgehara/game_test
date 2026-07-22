@@ -5,8 +5,8 @@
     "category": "castles",
     "level": 2,
     "grid": { "rows": 2, "columns": 2 },
-    "image": "assets/images/castles/castle-bright.png",
-    "thumbnail": "assets/images/castles/castle-bright_thumb.png",
+    "image": "assets/images/castles/castle-bright.webp",
+    "thumbnail": "assets/images/castles/castle-bright_thumb.webp",
     "placeholder": "Castillo con torres redondas",
     "approved": false
   },
@@ -16,8 +16,8 @@
     "category": "princesses",
     "level": 2,
     "grid": { "rows": 2, "columns": 2 },
-    "image": "assets/images/princesses/princess-crown.png",
-    "thumbnail": "assets/images/princesses/princess-crown_thumb.png",
+    "image": "assets/images/princesses/princess-crown.webp",
+    "thumbnail": "assets/images/princesses/princess-crown_thumb.webp",
     "placeholder": "Corona amable de princesa",
     "approved": false
   },
@@ -27,8 +27,8 @@
     "category": "unicorns",
     "level": 2,
     "grid": { "rows": 2, "columns": 2 },
-    "image": "assets/images/unicorns/unicorn-cloud.png",
-    "thumbnail": "assets/images/unicorns/unicorn-cloud_thumb.png",
+    "image": "assets/images/unicorns/unicorn-cloud.webp",
+    "thumbnail": "assets/images/unicorns/unicorn-cloud_thumb.webp",
     "placeholder": "Unicornio sobre una nube",
     "approved": false
   }

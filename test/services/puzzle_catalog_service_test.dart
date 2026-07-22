@@ -49,7 +49,11 @@ void main() {
         isTrue,
       );
       expect(
-        puzzles.every((puzzle) => puzzle.imagePath.endsWith('.png')),
+        puzzles.every(
+          (puzzle) =>
+              puzzle.imagePath.endsWith('.png') ||
+              puzzle.imagePath.endsWith('.webp'),
+        ),
         isTrue,
       );
     });
@@ -91,30 +95,38 @@ void main() {
       final unapproved = AssetManifestEntry(
         id: puzzle.id,
         path: puzzle.imagePath,
-        origin: 'Example origin',
+        sourceTitle: 'Example origin',
+        sourceUrl: 'https://example.org/source',
         license: 'CC0-1.0',
+        licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
         attribution: 'Example attribution',
         approved: false,
         approvedBy: '',
         approvedAt: '',
         width: 1024,
         height: 1024,
-        format: 'png',
+        format: puzzle.imagePath.endsWith('.webp') ? 'webp' : 'png',
         bytes: 320000,
+        sha256:
+            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
       final approved = AssetManifestEntry(
         id: puzzle.id,
         path: puzzle.imagePath,
-        origin: 'Example origin',
+        sourceTitle: 'Example origin',
+        sourceUrl: 'https://example.org/source',
         license: 'CC0-1.0',
+        licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
         attribution: 'Example attribution',
         approved: true,
         approvedBy: 'Legal reviewer',
         approvedAt: '2026-07-21T00:00:00Z',
         width: 1024,
         height: 1024,
-        format: 'png',
+        format: puzzle.imagePath.endsWith('.webp') ? 'webp' : 'png',
         bytes: 320000,
+        sha256:
+            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
 
       expect(
