@@ -1,5 +1,7 @@
 Puzzle Kids asset notice
 
+Android launcher icon: PROJECT-OWNED original vector artwork in assets/source/icon/puzzle-kids-icon.svg. No external artwork or copyrighted image asset was used.
+
 No real third-party puzzle images are bundled in this slice.
 
 The bundled assets/catalog/asset_licenses.json file is an unapproved sample only. Its entries are approved=false, are rejected by AssetManifestValidator, and must not render as real puzzle images.

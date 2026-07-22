@@ -2,6 +2,10 @@
 
 A new Flutter project.
 
+## Android launcher icon
+
+The launcher icon is project-owned artwork: `assets/source/icon/puzzle-kids-icon.svg` documents origin as `PROJECT-OWNED`. It uses original vector puzzle-piece geometry, high-contrast child-friendly colors, no embedded text, and no external image assets. Android uses legacy density PNG resources plus adaptive icon foreground/background resources under `android/app/src/main/res/`.
+
 ## Asset governance policy
 
 Puzzle images must be local, offline, and approved before UI can render them as real assets. Do not hotlink, scrape, or add copyrighted binaries without documented permission.
