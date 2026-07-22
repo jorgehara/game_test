@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/puzzle_piece.dart';
 import '../theme/pk_tokens.dart';
+import 'puzzle_piece_geometry.dart';
 import 'puzzle_piece_shape.dart';
 
 class PuzzlePieceImageSource {
@@ -35,12 +36,14 @@ class PuzzlePieceTile extends StatelessWidget {
     required this.piece,
     required this.totalPieces,
     this.imageSource,
+    this.geometry,
     this.expand = false,
   });
 
   final PuzzlePiece piece;
   final int totalPieces;
   final PuzzlePieceImageSource? imageSource;
+  final PuzzlePieceGeometry? geometry;
   final bool expand;
 
   @override
@@ -53,14 +56,17 @@ class PuzzlePieceTile extends StatelessWidget {
     final fillColor =
         colors.piecePalette[piece.correctIndex % colors.piecePalette.length];
     final borderColor = colors.onSurface;
+    final resolvedGeometry =
+        geometry ?? PuzzlePieceGeometry.forTray(piece: piece);
+    final tileSize = resolvedGeometry.viewportSize;
 
     return Semantics(
       container: true,
       excludeSemantics: true,
       label: 'Pieza $number de $totalPieces',
       child: SizedBox(
-        width: expand ? double.infinity : 86,
-        height: expand ? double.infinity : 86,
+        width: expand ? double.infinity : tileSize.width,
+        height: expand ? double.infinity : tileSize.height,
         child: CustomPaint(
           key: Key('puzzle-piece-shape-${piece.id}'),
           painter: PuzzlePieceShapePainter(
@@ -71,29 +77,34 @@ class PuzzlePieceTile extends StatelessWidget {
             shadowColor: colors.outline.withValues(alpha: 0.18),
             shadowBlurRadius: 4,
             shadowOffset: const Offset(0, 2),
+            cellRectInViewport: resolvedGeometry.cellRectInViewport,
           ),
-          foregroundPainter: PuzzlePieceShapePainter(
-            edges: piece.edges,
-            fillColor: fillColor,
-            borderColor: borderColor,
-            borderWidth: 3,
-            paintFill: false,
-          ),
+          foregroundPainter: resolvedGeometry.paintInternalOutline
+              ? PuzzlePieceShapePainter(
+                  edges: piece.edges,
+                  fillColor: fillColor,
+                  borderColor: borderColor,
+                  borderWidth: 3,
+                  paintFill: false,
+                  cellRectInViewport: resolvedGeometry.cellRectInViewport,
+                )
+              : null,
           child: ClipPath(
-            clipper: PuzzlePieceShapeClipper(edges: piece.edges),
+            clipper: PuzzlePieceShapeClipper(
+              edges: piece.edges,
+              cellRectInViewport: resolvedGeometry.cellRectInViewport,
+            ),
             child: ColoredBox(
               color: fillColor,
-              child: Padding(
-                padding: const EdgeInsets.all(3),
-                child: showImage
-                    ? _PuzzlePieceImageCrop(
-                        key: Key('puzzle-piece-image-${piece.id}'),
-                        piece: piece,
-                        imageSource: source,
-                        loadingFallback: fallback,
-                      )
-                    : Center(child: fallback),
-              ),
+              child: showImage
+                  ? _PuzzlePieceImageCrop(
+                      key: Key('puzzle-piece-image-${piece.id}'),
+                      piece: piece,
+                      geometry: resolvedGeometry,
+                      imageSource: source,
+                      loadingFallback: fallback,
+                    )
+                  : Center(child: fallback),
             ),
           ),
         ),
@@ -113,17 +124,19 @@ class _PuzzlePieceImageCrop extends StatelessWidget {
   const _PuzzlePieceImageCrop({
     super.key,
     required this.piece,
+    required this.geometry,
     required this.imageSource,
     required this.loadingFallback,
   });
 
   final PuzzlePiece piece;
+  final PuzzlePieceGeometry geometry;
   final PuzzlePieceImageSource imageSource;
   final Widget loadingFallback;
 
   @override
   Widget build(BuildContext context) {
-    final crop = piece.crop;
+    final crop = geometry.sourceRect;
 
     return ClipRect(
       child: LayoutBuilder(

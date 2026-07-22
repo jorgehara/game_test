@@ -35,8 +35,8 @@ class PkTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(48, 56),
-          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          minimumSize: PkButtonTokens.standard.minSize,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
           backgroundColor: colors.primary,
           foregroundColor: colors.onPrimary,
@@ -50,6 +50,7 @@ class PkTheme {
         PkColors.light,
         PkSpacing.standard,
         PkRadius.standard,
+        PkButtonTokens.standard,
         PkMotion.standardMotion,
       ],
     ).copyWith(
@@ -57,6 +58,7 @@ class PkTheme {
         colors,
         PkSpacing.standard,
         PkRadius.standard,
+        PkButtonTokens.standard,
         PkMotion.standardMotion,
       ],
     );

@@ -37,6 +37,9 @@ void main() {
 
     expect(context.pkSpacing.md, 16);
     expect(context.pkRadius.card, 32);
+    expect(context.pkButtonTokens.radius, context.pkRadius.button);
+    expect(context.pkButtonTokens.primaryElevation, lessThanOrEqualTo(2));
+    expect(context.pkButtonTokens.pressedOpacity, inInclusiveRange(0.08, 0.16));
     expect(context.pkMotion.standard, const Duration(milliseconds: 220));
     expect(contrast, greaterThanOrEqualTo(4.5));
 
@@ -45,7 +48,32 @@ void main() {
     );
     expect(buttonSize.width, greaterThanOrEqualTo(48));
     expect(buttonSize.height, greaterThanOrEqualTo(48));
-    expect(find.bySemanticsLabel('Empezar aventura'), findsOneWidget);
+    expect(find.bySemanticsLabel('Empezar aventura'), findsWidgets);
+  });
+
+  testWidgets('theme exposes tokenized button state values', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: PkTheme.light(),
+        home: Scaffold(
+          body: PkButton(label: 'Continuar', onPressed: () {}),
+        ),
+      ),
+    );
+
+    final context = tester.element(find.byType(PkButton));
+    final tokens = context.pkButtonTokens;
+    final style = PkButton.styleFor(context, PkButtonVariant.primary);
+
+    expect(tokens.minSize, const Size(48, 56));
+    expect(tokens.horizontalPadding, 24);
+    expect(tokens.radius, 28);
+    expect(style.elevation?.resolve({}), tokens.primaryElevation);
+    expect(
+      style.elevation?.resolve({WidgetState.disabled}),
+      tokens.disabledElevation,
+    );
+    expect(style.shadowColor?.resolve({})?.a, lessThan(0.35));
   });
 
   testWidgets('app provides light and dark tokenized themes', (tester) async {

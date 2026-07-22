@@ -4,6 +4,7 @@ import 'package:puzzle_kids/models/grid_position.dart';
 import 'package:puzzle_kids/models/grid_spec.dart';
 import 'package:puzzle_kids/models/normalized_rect.dart';
 import 'package:puzzle_kids/models/puzzle_piece.dart';
+import 'package:puzzle_kids/widgets/puzzle_piece_geometry.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_shape.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_tile.dart';
 
@@ -114,8 +115,8 @@ void main() {
         ),
       );
 
-      expect(transform.transform.getTranslation().x, closeTo(-168, 0.001));
-      expect(transform.transform.getTranslation().y, closeTo(-84, 0.001));
+      expect(transform.transform.getTranslation().x, closeTo(-180, 0.001));
+      expect(transform.transform.getTranslation().y, closeTo(-90, 0.001));
 
       final fullPuzzleBox = tester.widget<SizedBox>(
         find.descendant(
@@ -123,8 +124,8 @@ void main() {
           matching: find.byKey(const Key('puzzle-piece-image-space-piece-1-2')),
         ),
       );
-      expect(fullPuzzleBox.width, closeTo(252, 0.001));
-      expect(fullPuzzleBox.height, closeTo(252, 0.001));
+      expect(fullPuzzleBox.width, closeTo(270, 0.001));
+      expect(fullPuzzleBox.height, closeTo(270, 0.001));
     });
 
     testWidgets('uses cover math for rectangular sources without stretching', (
@@ -159,11 +160,69 @@ void main() {
       );
       final image = tester.widget<Image>(find.byType(Image));
 
-      expect(fullPuzzleBox.width, 188);
-      expect(fullPuzzleBox.height, 148);
+      expect(fullPuzzleBox.width, 200);
+      expect(fullPuzzleBox.height, 160);
       expect(image.fit, BoxFit.cover);
-      expect(image.width, 188);
-      expect(image.height, 148);
+      expect(image.width, 200);
+      expect(image.height, 160);
+    });
+
+    testWidgets('uses geometry source rect and suppresses board outline', (
+      tester,
+    ) async {
+      const source = PuzzlePieceImageSource(
+        assetPath: 'assets/images/castles/castillo-princesa.webp',
+        sourceWidth: 1024,
+        sourceHeight: 1024,
+      );
+      final piece = _piece(
+        grid: GridSpec(rows: 3, columns: 3),
+        row: 1,
+        column: 1,
+        edges: const PuzzlePieceEdges(
+          top: PuzzlePieceEdge.tab,
+          right: PuzzlePieceEdge.blank,
+          bottom: PuzzlePieceEdge.tab,
+          left: PuzzlePieceEdge.blank,
+        ),
+      );
+      final geometry = PuzzlePieceGeometry.forBoard(
+        piece: piece,
+        boardSize: const Size(300, 300),
+      );
+
+      await tester.pumpWidget(
+        _host(
+          SizedBox(
+            width: geometry.viewportSize.width,
+            height: geometry.viewportSize.height,
+            child: _tile(
+              piece,
+              totalPieces: 9,
+              imageSource: source,
+              geometry: geometry,
+              expand: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester
+            .widget<CustomPaint>(
+              find.byKey(Key('puzzle-piece-shape-${piece.id}')),
+            )
+            .foregroundPainter,
+        isNull,
+      );
+      final transform = tester.widget<Transform>(
+        find.descendant(
+          of: find.byKey(Key('puzzle-piece-image-${piece.id}')),
+          matching: find.byType(Transform),
+        ),
+      );
+      expect(transform.transform.getTranslation().x, closeTo(-88, 0.001));
+      expect(transform.transform.getTranslation().y, closeTo(-88, 0.001));
     });
 
     testWidgets('falls back while loading and after asset errors', (
@@ -274,12 +333,14 @@ PuzzlePieceTile _tile(
   PuzzlePiece piece, {
   required int totalPieces,
   PuzzlePieceImageSource? imageSource,
+  PuzzlePieceGeometry? geometry,
   bool expand = false,
 }) {
   return PuzzlePieceTile(
     piece: piece,
     totalPieces: totalPieces,
     imageSource: imageSource,
+    geometry: geometry,
     expand: expand,
   );
 }

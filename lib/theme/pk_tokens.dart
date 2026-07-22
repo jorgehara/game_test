@@ -212,6 +212,131 @@ class PkRadius extends ThemeExtension<PkRadius> {
 }
 
 @immutable
+class PkButtonTokens extends ThemeExtension<PkButtonTokens> {
+  const PkButtonTokens({
+    required this.minSize,
+    required this.compactMinSize,
+    required this.horizontalPadding,
+    required this.compactHorizontalPadding,
+    required this.verticalPadding,
+    required this.gap,
+    required this.radius,
+    required this.primaryElevation,
+    required this.tonalElevation,
+    required this.disabledElevation,
+    required this.pressedOpacity,
+    required this.focusOpacity,
+    required this.disabledOpacity,
+    required this.focusOutlineWidth,
+  });
+
+  final Size minSize;
+  final Size compactMinSize;
+  final double horizontalPadding;
+  final double compactHorizontalPadding;
+  final double verticalPadding;
+  final double gap;
+  final double radius;
+  final double primaryElevation;
+  final double tonalElevation;
+  final double disabledElevation;
+  final double pressedOpacity;
+  final double focusOpacity;
+  final double disabledOpacity;
+  final double focusOutlineWidth;
+
+  static const standard = PkButtonTokens(
+    minSize: Size(48, 56),
+    compactMinSize: Size(48, 48),
+    horizontalPadding: 24,
+    compactHorizontalPadding: 16,
+    verticalPadding: 12,
+    gap: 8,
+    radius: 28,
+    primaryElevation: 1,
+    tonalElevation: 0,
+    disabledElevation: 0,
+    pressedOpacity: 0.12,
+    focusOpacity: 0.14,
+    disabledOpacity: 0.38,
+    focusOutlineWidth: 2,
+  );
+
+  @override
+  PkButtonTokens copyWith({
+    Size? minSize,
+    Size? compactMinSize,
+    double? horizontalPadding,
+    double? compactHorizontalPadding,
+    double? verticalPadding,
+    double? gap,
+    double? radius,
+    double? primaryElevation,
+    double? tonalElevation,
+    double? disabledElevation,
+    double? pressedOpacity,
+    double? focusOpacity,
+    double? disabledOpacity,
+    double? focusOutlineWidth,
+  }) {
+    return PkButtonTokens(
+      minSize: minSize ?? this.minSize,
+      compactMinSize: compactMinSize ?? this.compactMinSize,
+      horizontalPadding: horizontalPadding ?? this.horizontalPadding,
+      compactHorizontalPadding:
+          compactHorizontalPadding ?? this.compactHorizontalPadding,
+      verticalPadding: verticalPadding ?? this.verticalPadding,
+      gap: gap ?? this.gap,
+      radius: radius ?? this.radius,
+      primaryElevation: primaryElevation ?? this.primaryElevation,
+      tonalElevation: tonalElevation ?? this.tonalElevation,
+      disabledElevation: disabledElevation ?? this.disabledElevation,
+      pressedOpacity: pressedOpacity ?? this.pressedOpacity,
+      focusOpacity: focusOpacity ?? this.focusOpacity,
+      disabledOpacity: disabledOpacity ?? this.disabledOpacity,
+      focusOutlineWidth: focusOutlineWidth ?? this.focusOutlineWidth,
+    );
+  }
+
+  @override
+  PkButtonTokens lerp(ThemeExtension<PkButtonTokens>? other, double t) {
+    if (other is! PkButtonTokens) return this;
+    return PkButtonTokens(
+      minSize: Size.lerp(minSize, other.minSize, t)!,
+      compactMinSize: Size.lerp(compactMinSize, other.compactMinSize, t)!,
+      horizontalPadding: lerpDouble(
+        horizontalPadding,
+        other.horizontalPadding,
+        t,
+      ),
+      compactHorizontalPadding: lerpDouble(
+        compactHorizontalPadding,
+        other.compactHorizontalPadding,
+        t,
+      ),
+      verticalPadding: lerpDouble(verticalPadding, other.verticalPadding, t),
+      gap: lerpDouble(gap, other.gap, t),
+      radius: lerpDouble(radius, other.radius, t),
+      primaryElevation: lerpDouble(primaryElevation, other.primaryElevation, t),
+      tonalElevation: lerpDouble(tonalElevation, other.tonalElevation, t),
+      disabledElevation: lerpDouble(
+        disabledElevation,
+        other.disabledElevation,
+        t,
+      ),
+      pressedOpacity: lerpDouble(pressedOpacity, other.pressedOpacity, t),
+      focusOpacity: lerpDouble(focusOpacity, other.focusOpacity, t),
+      disabledOpacity: lerpDouble(disabledOpacity, other.disabledOpacity, t),
+      focusOutlineWidth: lerpDouble(
+        focusOutlineWidth,
+        other.focusOutlineWidth,
+        t,
+      ),
+    );
+  }
+}
+
+@immutable
 class PkMotion extends ThemeExtension<PkMotion> {
   const PkMotion({required this.fast, required this.standard});
 
@@ -250,6 +375,8 @@ extension PkThemeTokens on BuildContext {
       Theme.of(this).extension<PkSpacing>() ?? PkSpacing.standard;
   PkRadius get pkRadius =>
       Theme.of(this).extension<PkRadius>() ?? PkRadius.standard;
+  PkButtonTokens get pkButtonTokens =>
+      Theme.of(this).extension<PkButtonTokens>() ?? PkButtonTokens.standard;
   PkMotion get pkMotion =>
       Theme.of(this).extension<PkMotion>() ?? PkMotion.standardMotion;
 }

@@ -4,12 +4,13 @@ import '../models/grid_position.dart';
 import '../models/puzzle.dart';
 import '../models/puzzle_piece.dart';
 import '../theme/pk_tokens.dart';
+import 'puzzle_piece_geometry.dart';
 import 'puzzle_piece_tile.dart';
 
 abstract final class PuzzleBoardSurfaceTokens {
   static const boardBorderWidth = 2.0;
   static const slotDividerWidth = 1.0;
-  static const placedPieceInset = 4.0;
+  static const placedPieceInset = 0.0;
   static const slotNumberFontSize = 28.0;
 }
 
@@ -93,26 +94,11 @@ class PuzzleBoard extends StatelessWidget {
                             ),
                         for (final piece in pieces)
                           if (placedPositions.containsKey(piece.id))
-                            Positioned(
-                              key: Key('puzzle-placed-piece-${piece.id}'),
-                              left:
-                                  piece.correctPosition.column * cellWidth +
-                                  PuzzleBoardSurfaceTokens.placedPieceInset,
-                              top:
-                                  piece.correctPosition.row * cellHeight +
-                                  PuzzleBoardSurfaceTokens.placedPieceInset,
-                              width:
-                                  cellWidth -
-                                  PuzzleBoardSurfaceTokens.placedPieceInset * 2,
-                              height:
-                                  cellHeight -
-                                  PuzzleBoardSurfaceTokens.placedPieceInset * 2,
-                              child: PuzzlePieceTile(
-                                piece: piece,
-                                totalPieces: pieces.length,
-                                imageSource: pieceImageSource,
-                                expand: true,
-                              ),
+                            _PlacedPiece(
+                              piece: piece,
+                              totalPieces: pieces.length,
+                              boardSize: Size(boardWidth, boardHeight),
+                              imageSource: pieceImageSource,
                             ),
                       ],
                     ),
@@ -122,6 +108,40 @@ class PuzzleBoard extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _PlacedPiece extends StatelessWidget {
+  const _PlacedPiece({
+    required this.piece,
+    required this.totalPieces,
+    required this.boardSize,
+    required this.imageSource,
+  });
+
+  final PuzzlePiece piece;
+  final int totalPieces;
+  final Size boardSize;
+  final PuzzlePieceImageSource? imageSource;
+
+  @override
+  Widget build(BuildContext context) {
+    final geometry = PuzzlePieceGeometry.forBoard(
+      piece: piece,
+      boardSize: boardSize,
+    );
+
+    return Positioned.fromRect(
+      key: Key('puzzle-placed-piece-${piece.id}'),
+      rect: geometry.visualRect,
+      child: PuzzlePieceTile(
+        piece: piece,
+        totalPieces: totalPieces,
+        imageSource: imageSource,
+        geometry: geometry,
+        expand: true,
       ),
     );
   }

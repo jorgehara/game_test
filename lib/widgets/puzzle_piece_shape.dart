@@ -14,20 +14,21 @@ class PuzzlePieceShape {
   static const _tabEnd = 0.66;
   static const _tabMid = 0.50;
 
-  Path pathFor(Size size) {
-    final rect = Offset.zero & size;
-    if (rect.isEmpty) return Path();
+  Path pathFor(Size size, {Rect? cellRectInViewport}) {
+    final viewport = Offset.zero & size;
+    final rect = cellRectInViewport ?? viewport;
+    if (viewport.isEmpty || rect.isEmpty) return Path();
 
     if (edges == PuzzlePieceEdges.allFlat) {
-      final radius = Radius.circular(size.shortestSide * _cornerRadiusFactor);
+      final radius = Radius.circular(rect.shortestSide * _cornerRadiusFactor);
       return Path()..addRRect(RRect.fromRectAndRadius(rect, radius));
     }
 
-    final inset = size.shortestSide * _safeInsetFactor;
-    final left = inset;
-    final top = inset;
-    final right = size.width - inset;
-    final bottom = size.height - inset;
+    final depth = rect.shortestSide * _safeInsetFactor;
+    final left = rect.left;
+    final top = rect.top;
+    final right = rect.right;
+    final bottom = rect.bottom;
 
     return Path()
       ..moveTo(left, top)
@@ -36,48 +37,56 @@ class PuzzlePieceShape {
         end: Offset(right, top),
         edge: edges.top,
         outward: -1,
-        minOutward: 0,
+        minOutward: viewport.top,
         maxInward: bottom,
+        depth: depth,
       )
       .._addVerticalEdge(
         start: Offset(right, top),
         end: Offset(right, bottom),
         edge: edges.right,
         outward: 1,
-        minOutward: size.width,
+        minOutward: viewport.right,
         maxInward: left,
+        depth: depth,
       )
       .._addHorizontalEdge(
         start: Offset(right, bottom),
         end: Offset(left, bottom),
         edge: edges.bottom,
         outward: 1,
-        minOutward: size.height,
+        minOutward: viewport.bottom,
         maxInward: top,
+        depth: depth,
       )
       .._addVerticalEdge(
         start: Offset(left, bottom),
         end: Offset(left, top),
         edge: edges.left,
         outward: -1,
-        minOutward: 0,
+        minOutward: viewport.left,
         maxInward: right,
+        depth: depth,
       )
       ..close();
   }
 }
 
 class PuzzlePieceShapeClipper extends CustomClipper<Path> {
-  const PuzzlePieceShapeClipper({required this.edges});
+  const PuzzlePieceShapeClipper({required this.edges, this.cellRectInViewport});
 
   final PuzzlePieceEdges edges;
+  final Rect? cellRectInViewport;
 
   @override
-  Path getClip(Size size) => PuzzlePieceShape(edges).pathFor(size);
+  Path getClip(Size size) => PuzzlePieceShape(
+    edges,
+  ).pathFor(size, cellRectInViewport: cellRectInViewport);
 
   @override
   bool shouldReclip(PuzzlePieceShapeClipper oldClipper) {
-    return oldClipper.edges != edges;
+    return oldClipper.edges != edges ||
+        oldClipper.cellRectInViewport != cellRectInViewport;
   }
 }
 
@@ -92,6 +101,7 @@ class PuzzlePieceShapePainter extends CustomPainter {
     this.shadowOffset = Offset.zero,
     this.paintFill = true,
     this.paintBorder = true,
+    this.cellRectInViewport,
   });
 
   final PuzzlePieceEdges edges;
@@ -103,10 +113,13 @@ class PuzzlePieceShapePainter extends CustomPainter {
   final Offset shadowOffset;
   final bool paintFill;
   final bool paintBorder;
+  final Rect? cellRectInViewport;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = PuzzlePieceShape(edges).pathFor(size);
+    final path = PuzzlePieceShape(
+      edges,
+    ).pathFor(size, cellRectInViewport: cellRectInViewport);
     if (path.getBounds().isEmpty) return;
 
     if (shadowColor.a > 0 && shadowBlurRadius > 0) {
@@ -145,7 +158,8 @@ class PuzzlePieceShapePainter extends CustomPainter {
         oldDelegate.shadowBlurRadius != shadowBlurRadius ||
         oldDelegate.shadowOffset != shadowOffset ||
         oldDelegate.paintFill != paintFill ||
-        oldDelegate.paintBorder != paintBorder;
+        oldDelegate.paintBorder != paintBorder ||
+        oldDelegate.cellRectInViewport != cellRectInViewport;
   }
 }
 
@@ -157,6 +171,7 @@ extension on Path {
     required double outward,
     required double minOutward,
     required double maxInward,
+    required double depth,
   }) {
     final length = end.dx - start.dx;
     final y = start.dy;
@@ -165,7 +180,6 @@ extension on Path {
       return;
     }
 
-    final depth = length.abs() * PuzzlePieceShape._safeInsetFactor;
     final x1 = start.dx + length * PuzzlePieceShape._tabStart;
     final xm = start.dx + length * PuzzlePieceShape._tabMid;
     final x2 = start.dx + length * PuzzlePieceShape._tabEnd;
@@ -186,6 +200,7 @@ extension on Path {
     required double outward,
     required double minOutward,
     required double maxInward,
+    required double depth,
   }) {
     final length = end.dy - start.dy;
     final x = start.dx;
@@ -194,7 +209,6 @@ extension on Path {
       return;
     }
 
-    final depth = length.abs() * PuzzlePieceShape._safeInsetFactor;
     final y1 = start.dy + length * PuzzlePieceShape._tabStart;
     final ym = start.dy + length * PuzzlePieceShape._tabMid;
     final y2 = start.dy + length * PuzzlePieceShape._tabEnd;

@@ -14,6 +14,8 @@ import 'package:puzzle_kids/routes/app_routes.dart';
 import 'package:puzzle_kids/screens/puzzle_game_screen.dart';
 import 'package:puzzle_kids/services/asset_manifest_validator.dart';
 import 'package:puzzle_kids/widgets/completion_dialog.dart';
+import 'package:puzzle_kids/widgets/completion_confetti_overlay.dart';
+import 'package:puzzle_kids/widgets/pk_button.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_shape.dart';
 import 'package:puzzle_kids/widgets/puzzle_piece_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,6 +60,54 @@ void main() {
     expect(boardRect.height, greaterThan(360));
     expect(boardRect.overlaps(trayRect), isFalse);
     semantics.dispose();
+  });
+
+  testWidgets('header controls use semantic non-competing PkButton hierarchy', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await _pumpGame(tester);
+
+    final headerButtons = tester.widgetList<PkButton>(find.byType(PkButton));
+    expect(
+      headerButtons.where(
+        (button) =>
+            button.label == 'Volver' && button.variant == PkButtonVariant.ghost,
+      ),
+      hasLength(1),
+    );
+    expect(
+      headerButtons.where(
+        (button) =>
+            button.label == 'Reiniciar' &&
+            button.variant == PkButtonVariant.tonal,
+      ),
+      hasLength(1),
+    );
+    expect(
+      headerButtons.where(
+        (button) =>
+            button.label == 'Sonido pronto' &&
+            button.variant == PkButtonVariant.ghost,
+      ),
+      hasLength(1),
+    );
+
+    for (final label in ['Volver', 'Reiniciar', 'Sonido pronto']) {
+      expect(find.bySemanticsLabel(label), findsWidgets);
+      final rect = tester.getRect(find.text(label));
+      final buttonRect = tester.getRect(
+        find.ancestor(
+          of: find.text(label),
+          matching: find.byType(ElevatedButton),
+        ),
+      );
+      expect(buttonRect.width, greaterThanOrEqualTo(48));
+      expect(buttonRect.height, greaterThanOrEqualTo(48));
+      expect(buttonRect.width - rect.width, greaterThanOrEqualTo(8));
+    }
   });
 
   testWidgets('keeps logical placement visible after resize', (tester) async {
@@ -206,7 +256,7 @@ void main() {
     expect(find.text('Progreso 0/4'), findsOneWidget);
   });
 
-  testWidgets('completion shows accessible dialog once and stores progress', (
+  testWidgets('completion shows confetti before dialog and stores progress', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
@@ -217,18 +267,17 @@ void main() {
 
     await _pumpGame(tester, provider: provider, progress: progress);
 
-    for (final pieceId in ['lion_0_0', 'lion_0_1', 'lion_1_0', 'lion_1_1']) {
-      final index = int.parse(pieceId.substring(pieceId.length - 1));
-      final rowOffset = pieceId.contains('_1_') ? 2 : 0;
-      await _dragPieceToSlot(
-        tester,
-        pieceId: pieceId,
-        slotIndex: rowOffset + index,
-      );
-    }
-    await tester.pumpAndSettle();
+    _completeProvider(provider);
+    await tester.pump();
 
     expect(provider.isCompleted, isTrue);
+    expect(find.byType(CompletionConfettiOverlay), findsOneWidget);
+    expect(find.byKey(const Key('completion-dialog')), findsNothing);
+
+    await tester.pump(CompletionConfettiOverlay.duration);
+    await tester.pump();
+
+    expect(find.byType(CompletionConfettiOverlay), findsNothing);
     expect(find.byKey(const Key('completion-dialog')), findsOneWidget);
     expect(find.text('¡Lo lograste!'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
@@ -241,6 +290,112 @@ void main() {
 
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('completion-dialog')), findsNothing);
+  });
+
+  testWidgets('reduced motion skips animated confetti and opens dialog', (
+    tester,
+  ) async {
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    await _pumpGame(
+      tester,
+      provider: provider,
+      disableAnimations: true,
+      settle: false,
+    );
+
+    _completeProvider(provider);
+    await tester.pump();
+
+    expect(find.byType(CompletionConfettiOverlay), findsNothing);
+    expect(find.byKey(const Key('completion-dialog')), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 16));
+    await tester.pump();
+
+    expect(find.byKey(const Key('completion-dialog')), findsOneWidget);
+  });
+
+  testWidgets('duplicate completion notifications keep one completion dialog', (
+    tester,
+  ) async {
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    await _pumpGame(tester, provider: provider, settle: false);
+
+    _completeProvider(provider);
+    provider.notifyListeners();
+    provider.notifyListeners();
+    await tester.pump();
+    await tester.pump(CompletionConfettiOverlay.duration);
+    await tester.pump();
+
+    expect(find.byKey(const Key('completion-dialog')), findsOneWidget);
+    expect(find.text('¡Lo lograste!'), findsOneWidget);
+  });
+
+  testWidgets('reset cancels stale pending completion celebration', (
+    tester,
+  ) async {
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    await _pumpGame(tester, provider: provider, settle: false);
+
+    _completeProvider(provider);
+    await tester.pump();
+    expect(find.byType(CompletionConfettiOverlay), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('puzzle-reset-button')));
+    await tester.pump();
+    await tester.pump(CompletionConfettiOverlay.duration);
+    await tester.pump();
+
+    expect(provider.isCompleted, isFalse);
+    expect(find.byType(CompletionConfettiOverlay), findsNothing);
+    expect(find.byKey(const Key('completion-dialog')), findsNothing);
+  });
+
+  testWidgets('disposal cancels delayed completion dialog', (tester) async {
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    await _pumpGame(tester, provider: provider, settle: false);
+
+    _completeProvider(provider);
+    await tester.pump();
+    expect(find.byType(CompletionConfettiOverlay), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(CompletionConfettiOverlay.duration);
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('completion-dialog')), findsNothing);
+  });
+
+  testWidgets('onboarding dialog prevents overlapping completion dialog', (
+    tester,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboarding = OnboardingProvider(prefs: prefs)..markLoaded();
+    final provider = _provider()..start(puzzleId: 'lion');
+
+    await _pumpGame(
+      tester,
+      provider: provider,
+      onboarding: onboarding,
+      settle: false,
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsOneWidget);
+
+    _completeProvider(provider);
+    await tester.pump();
+    await tester.pump(CompletionConfettiOverlay.duration);
+    await tester.pump();
+
+    expect(find.byKey(const Key('drag-onboarding-dialog')), findsOneWidget);
     expect(find.byKey(const Key('completion-dialog')), findsNothing);
   });
 
@@ -293,7 +448,9 @@ void main() {
     expect(trayRect.height, greaterThanOrEqualTo(240));
   });
 
-  testWidgets('completion dialog uses reduced motion fallback', (tester) async {
+  testWidgets('completion dialog keeps actions without owning confetti', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: MediaQuery(
@@ -313,8 +470,8 @@ void main() {
       ),
     );
 
-    expect(find.byKey(const Key('completion-static-success')), findsOneWidget);
-    expect(find.byKey(const Key('completion-confetti')), findsNothing);
+    expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+    expect(find.byType(CompletionConfettiOverlay), findsNothing);
   });
 
   testWidgets('drag onboarding appears once with skip action', (tester) async {
@@ -553,6 +710,7 @@ Future<void> _pumpGame(
   OnboardingProvider? onboarding,
   bool disableAnimations = false,
   List<AssetManifestEntry>? assetManifest,
+  bool settle = true,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   final defaultOnboarding = OnboardingProvider(prefs: prefs)..markLoaded();
@@ -592,7 +750,17 @@ Future<void> _pumpGame(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
+}
+
+void _completeProvider(PuzzleGameProvider provider) {
+  for (final piece in provider.pieces) {
+    provider.placePiece(piece.id);
+  }
 }
 
 Future<void> _dragPieceToSlot(

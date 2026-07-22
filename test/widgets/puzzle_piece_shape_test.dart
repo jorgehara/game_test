@@ -51,5 +51,49 @@ void main() {
       expect(first.getBounds(), second.getBounds());
       expect(first.computeMetrics().length, second.computeMetrics().length);
     });
+
+    test('tabs protrude into expanded viewport from canonical cell', () {
+      const size = Size(124, 124);
+      const cellRect = Rect.fromLTWH(12, 12, 100, 100);
+      const edges = PuzzlePieceEdges(
+        top: PuzzlePieceEdge.tab,
+        right: PuzzlePieceEdge.tab,
+        bottom: PuzzlePieceEdge.tab,
+        left: PuzzlePieceEdge.tab,
+      );
+
+      final bounds = const PuzzlePieceShape(
+        edges,
+      ).pathFor(size, cellRectInViewport: cellRect).getBounds();
+
+      expect(bounds.left, lessThan(cellRect.left));
+      expect(bounds.top, lessThan(cellRect.top));
+      expect(bounds.right, greaterThan(cellRect.right));
+      expect(bounds.bottom, greaterThan(cellRect.bottom));
+      expect(bounds.left, greaterThanOrEqualTo(0));
+      expect(bounds.top, greaterThanOrEqualTo(0));
+      expect(bounds.right, lessThanOrEqualTo(size.width));
+      expect(bounds.bottom, lessThanOrEqualTo(size.height));
+    });
+
+    test('exterior flats stay on board boundary in expanded viewport', () {
+      const size = Size(112, 112);
+      const cellRect = Rect.fromLTWH(0, 0, 100, 100);
+      const edges = PuzzlePieceEdges(
+        top: PuzzlePieceEdge.flat,
+        right: PuzzlePieceEdge.tab,
+        bottom: PuzzlePieceEdge.blank,
+        left: PuzzlePieceEdge.flat,
+      );
+
+      final bounds = const PuzzlePieceShape(
+        edges,
+      ).pathFor(size, cellRectInViewport: cellRect).getBounds();
+
+      expect(bounds.left, 0);
+      expect(bounds.top, 0);
+      expect(bounds.right, greaterThan(cellRect.right));
+      expect(bounds.bottom, cellRect.bottom);
+    });
   });
 }

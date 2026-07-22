@@ -171,11 +171,134 @@ void main() {
       expect(slotText.style?.fontSize, lessThanOrEqualTo(28));
 
       expect(find.byKey(const Key('puzzle-slot-1')), findsOneWidget);
-      expect(
-        tester.getRect(find.byKey(const Key('puzzle-placed-piece-piece-0-0'))),
-        isNot(tester.getRect(find.byKey(const Key('puzzle-slot-0')))),
+      final placedRect = tester.getRect(
+        find.byKey(const Key('puzzle-placed-piece-piece-0-0')),
       );
+      final slotRect = tester.getRect(find.byKey(const Key('puzzle-slot-0')));
+      expect(placedRect.topLeft, slotRect.topLeft);
+      expect(placedRect.right, greaterThan(slotRect.right));
+      expect(placedRect.bottom, greaterThan(slotRect.bottom));
     });
+
+    testWidgets('placed 2x2 pieces expand into internal frontiers only', (
+      tester,
+    ) async {
+      final grid = GridSpec(rows: 2, columns: 2);
+      final pieces = _pieces(grid);
+
+      await tester.pumpWidget(
+        _host(
+          PuzzleBoard(
+            puzzle: _puzzle(grid),
+            pieces: pieces,
+            placedPositions: {
+              for (final piece in pieces) piece.id: piece.correctPosition,
+            },
+          ),
+        ),
+      );
+
+      final board = tester.getRect(find.byKey(const Key('puzzle-board')));
+      final topLeft = tester.getRect(
+        find.byKey(const Key('puzzle-placed-piece-piece-0-0')),
+      );
+      final topRight = tester.getRect(
+        find.byKey(const Key('puzzle-placed-piece-piece-0-1')),
+      );
+      final bottomLeft = tester.getRect(
+        find.byKey(const Key('puzzle-placed-piece-piece-1-0')),
+      );
+
+      expect(topLeft.left, board.left);
+      expect(topLeft.top, board.top);
+      expect(topRight.right, board.right);
+      expect(bottomLeft.bottom, board.bottom);
+      expect(topLeft.right, greaterThan(topRight.left));
+      expect(topLeft.bottom, greaterThan(bottomLeft.top));
+    });
+
+    testWidgets(
+      'completed 3x3 board overlaps every internal frontier and centers four neighbors',
+      (tester) async {
+        final grid = GridSpec(rows: 3, columns: 3);
+        final pieces = _pieces(grid);
+
+        await tester.pumpWidget(
+          _host(
+            PuzzleBoard(
+              puzzle: _puzzle(grid),
+              pieces: pieces,
+              placedPositions: {
+                for (final piece in pieces) piece.id: piece.correctPosition,
+              },
+            ),
+          ),
+        );
+
+        final board = tester.getRect(find.byKey(const Key('puzzle-board')));
+        final cellWidth = board.width / grid.columns;
+        final cellHeight = board.height / grid.rows;
+
+        Rect placedRect(int row, int column) => tester.getRect(
+          find.byKey(Key('puzzle-placed-piece-piece-$row-$column')),
+        );
+
+        for (var row = 0; row < grid.rows; row += 1) {
+          for (var column = 0; column < grid.columns - 1; column += 1) {
+            final leftPiece = placedRect(row, column);
+            final rightPiece = placedRect(row, column + 1);
+            final frontierX = board.left + ((column + 1) * cellWidth);
+
+            expect(
+              leftPiece.right,
+              greaterThanOrEqualTo(frontierX - _geometryEpsilon),
+            );
+            expect(
+              rightPiece.left,
+              lessThanOrEqualTo(frontierX + _geometryEpsilon),
+            );
+            expect(
+              leftPiece.right,
+              greaterThanOrEqualTo(rightPiece.left - _geometryEpsilon),
+            );
+            expect(_verticalOverlap(leftPiece, rightPiece), greaterThan(0));
+          }
+        }
+
+        for (var row = 0; row < grid.rows - 1; row += 1) {
+          for (var column = 0; column < grid.columns; column += 1) {
+            final topPiece = placedRect(row, column);
+            final bottomPiece = placedRect(row + 1, column);
+            final frontierY = board.top + ((row + 1) * cellHeight);
+
+            expect(
+              topPiece.bottom,
+              greaterThanOrEqualTo(frontierY - _geometryEpsilon),
+            );
+            expect(
+              bottomPiece.top,
+              lessThanOrEqualTo(frontierY + _geometryEpsilon),
+            );
+            expect(
+              topPiece.bottom,
+              greaterThanOrEqualTo(bottomPiece.top - _geometryEpsilon),
+            );
+            expect(_horizontalOverlap(topPiece, bottomPiece), greaterThan(0));
+          }
+        }
+
+        final center = placedRect(1, 1);
+        final leftNeighbor = placedRect(1, 0);
+        final topNeighbor = placedRect(0, 1);
+        final rightNeighbor = placedRect(1, 2);
+        final bottomNeighbor = placedRect(2, 1);
+
+        expect(center.left, lessThanOrEqualTo(leftNeighbor.right));
+        expect(center.top, lessThanOrEqualTo(topNeighbor.bottom));
+        expect(center.right, greaterThanOrEqualTo(rightNeighbor.left));
+        expect(center.bottom, greaterThanOrEqualTo(bottomNeighbor.top));
+      },
+    );
 
     testWidgets('placed board pieces use the shared shaped tile renderer', (
       tester,
@@ -225,6 +348,18 @@ Widget _host(Widget child) {
   return MaterialApp(
     home: Scaffold(body: SizedBox(width: 360, height: 360, child: child)),
   );
+}
+
+const _geometryEpsilon = 0.001;
+
+double _verticalOverlap(Rect a, Rect b) {
+  return (a.bottom < b.bottom ? a.bottom : b.bottom) -
+      (a.top > b.top ? a.top : b.top);
+}
+
+double _horizontalOverlap(Rect a, Rect b) {
+  return (a.right < b.right ? a.right : b.right) -
+      (a.left > b.left ? a.left : b.left);
 }
 
 Puzzle _puzzle(GridSpec grid) {

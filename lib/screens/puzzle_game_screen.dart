@@ -13,11 +13,13 @@ import '../services/asset_manifest_validator.dart';
 import '../services/puzzle_asset_manifest_loader.dart';
 import '../services/puzzle_catalog_service.dart';
 import '../theme/pk_tokens.dart';
+import '../widgets/completion_confetti_overlay.dart';
 import '../widgets/completion_dialog.dart';
 import '../widgets/pk_button.dart';
 import '../widgets/pk_progress.dart';
 import '../widgets/pk_scaffold.dart';
 import '../widgets/puzzle_board.dart';
+import '../widgets/puzzle_piece_geometry.dart';
 import '../widgets/puzzle_piece_tile.dart';
 
 class PuzzleGameScreen extends StatefulWidget {
@@ -106,6 +108,8 @@ class _ReadyGameState extends State<_ReadyGame> {
   List<AssetManifestEntry>? _resolvedAssetManifest;
   _DragState? _drag;
   var _gestureVersion = 0;
+  var _completionToken = 0;
+  var _completionPhase = _CompletionPhase.idle;
   String? _completionDialogPuzzleId;
   var _completionDialogOpen = false;
   var _onboardingDialogOpen = false;
@@ -128,6 +132,12 @@ class _ReadyGameState extends State<_ReadyGame> {
     }
   }
 
+  @override
+  void dispose() {
+    _completionToken += 1;
+    super.dispose();
+  }
+
   Future<List<AssetManifestEntry>> _loadAssetManifest() {
     return widget.assetManifest == null
         ? PuzzleAssetManifestLoader.loadApproved(bundle: widget.assetBundle)
@@ -137,7 +147,7 @@ class _ReadyGameState extends State<_ReadyGame> {
   @override
   Widget build(BuildContext context) {
     _scheduleDragOnboarding(context);
-    _scheduleCompletionDialog(context);
+    _scheduleCompletionCelebration(context);
 
     final puzzle = provider.currentPuzzle!;
     final total = provider.pieces.length;
@@ -266,10 +276,16 @@ class _ReadyGameState extends State<_ReadyGame> {
                     piece: _drag!.piece,
                     totalPieces: provider.pieces.length,
                     imageSource: _drag!.imageSource,
+                    geometry: PuzzlePieceGeometry.forDrag(
+                      piece: _drag!.piece,
+                      size: _drag!.size,
+                    ),
                     expand: true,
                   ),
                 ),
               ),
+            if (_completionPhase == _CompletionPhase.celebrating)
+              const CompletionConfettiOverlay(),
           ],
         );
       },
@@ -322,57 +338,120 @@ class _ReadyGameState extends State<_ReadyGame> {
       );
 
       if (mounted) {
-        setState(() => _onboardingDialogOpen = false);
+        setState(() {
+          _onboardingDialogOpen = false;
+          if (_completionPhase == _CompletionPhase.dialogPending) {
+            _completionPhase = _CompletionPhase.idle;
+          }
+        });
       }
     });
   }
 
-  void _scheduleCompletionDialog(BuildContext context) {
+  void _scheduleCompletionCelebration(BuildContext context) {
     if (!provider.isCompleted) {
-      _completionDialogPuzzleId = null;
-      _completionDialogOpen = false;
+      _cancelCompletionCelebration();
       return;
     }
     final puzzle = provider.currentPuzzle;
     if (puzzle == null ||
         _completionDialogOpen ||
+        _completionPhase != _CompletionPhase.idle ||
         _completionDialogPuzzleId == puzzle.id) {
       return;
     }
 
-    _completionDialogOpen = true;
-    _completionDialogPuzzleId = puzzle.id;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || !provider.isCompleted) {
-        return;
-      }
-      await context.read<ProgressProvider>().markCompleted(puzzle.id);
-      if (!mounted) return;
+    final token = ++_completionToken;
+    final reducedMotion = MediaQuery.disableAnimationsOf(context);
+    _completionPhase = reducedMotion
+        ? _CompletionPhase.dialogPending
+        : _CompletionPhase.celebrating;
+    unawaited(_runCompletionSequence(puzzle, token, reducedMotion));
+  }
 
-      await showDialog<void>(
-        context: this.context,
-        barrierDismissible: true,
-        builder: (dialogContext) => CompletionDialog(
-          puzzleName: puzzle.name,
-          onReplay: () {
-            Navigator.of(dialogContext).maybePop();
-            _reset();
-          },
-          onContinue: () {
-            Navigator.of(dialogContext).maybePop();
-            Navigator.pushNamedAndRemoveUntil(
-              this.context,
-              AppRoutes.selection,
-              ModalRoute.withName(AppRoutes.menu),
-            );
-          },
-        ),
-      );
+  Future<void> _runCompletionSequence(
+    Puzzle puzzle,
+    int token,
+    bool reducedMotion,
+  ) async {
+    await Future<void>.delayed(
+      reducedMotion
+          ? const Duration(milliseconds: 16)
+          : CompletionConfettiOverlay.duration,
+    );
+    if (!_isCompletionTokenCurrent(token, puzzle.id)) {
+      return;
+    }
 
+    if (!mounted) return;
+    await context.read<ProgressProvider>().markCompleted(puzzle.id);
+    if (!_isCompletionTokenCurrent(token, puzzle.id)) {
+      return;
+    }
+    if (!_canShowCompletionDialog()) {
       if (mounted) {
-        setState(() => _completionDialogOpen = false);
+        setState(() => _completionPhase = _CompletionPhase.dialogPending);
       }
+      return;
+    }
+
+    setState(() {
+      _completionDialogOpen = true;
+      _completionDialogPuzzleId = puzzle.id;
+      _completionPhase = _CompletionPhase.dialogShown;
     });
+
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => CompletionDialog(
+        puzzleName: puzzle.name,
+        onReplay: () {
+          Navigator.of(dialogContext).maybePop();
+          _reset();
+        },
+        onContinue: () {
+          Navigator.of(dialogContext).maybePop();
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.selection,
+            ModalRoute.withName(AppRoutes.menu),
+          );
+        },
+      ),
+    );
+
+    if (mounted && _completionToken == token) {
+      setState(() => _completionDialogOpen = false);
+    }
+  }
+
+  bool _isCompletionTokenCurrent(int token, String puzzleId) {
+    return mounted &&
+        _completionToken == token &&
+        provider.isCompleted &&
+        provider.currentPuzzle?.id == puzzleId;
+  }
+
+  bool _canShowCompletionDialog() {
+    return mounted &&
+        !_onboardingDialogOpen &&
+        !_completionDialogOpen &&
+        (ModalRoute.of(context)?.isCurrent ?? true);
+  }
+
+  void _cancelCompletionCelebration() {
+    if (_completionPhase == _CompletionPhase.idle &&
+        !_completionDialogOpen &&
+        _completionDialogPuzzleId == null) {
+      return;
+    }
+
+    _completionToken += 1;
+    _completionPhase = _CompletionPhase.idle;
+    _completionDialogOpen = false;
+    _completionDialogPuzzleId = null;
   }
 
   void _startDrag(
@@ -468,6 +547,7 @@ class _ReadyGameState extends State<_ReadyGame> {
 
   void _reset() {
     _gestureVersion += 1;
+    _cancelCompletionCelebration();
     _clearDrag();
     provider.reset();
   }
@@ -489,6 +569,8 @@ class _ReadyGameState extends State<_ReadyGame> {
     });
   }
 }
+
+enum _CompletionPhase { idle, celebrating, dialogPending, dialogShown }
 
 class _DragOnboardingDialog extends StatelessWidget {
   const _DragOnboardingDialog({required this.onDismiss});
@@ -555,6 +637,7 @@ class _GameHeader extends StatelessWidget {
           key: const Key('puzzle-back-button'),
           label: 'Volver',
           icon: Icons.arrow_back_rounded,
+          variant: PkButtonVariant.ghost,
           onPressed: () => Navigator.maybePop(context),
         ),
         Text(
@@ -565,12 +648,14 @@ class _GameHeader extends StatelessWidget {
           key: const Key('puzzle-reset-button'),
           label: 'Reiniciar',
           icon: Icons.refresh_rounded,
+          variant: PkButtonVariant.tonal,
           onPressed: onReset,
         ),
         _LargeControl(
           key: const Key('puzzle-sound-placeholder-button'),
           label: 'Sonido pronto',
           icon: Icons.volume_off_rounded,
+          variant: PkButtonVariant.ghost,
           onPressed: () {},
         ),
       ],
@@ -633,6 +718,7 @@ class _PuzzleTray extends StatelessWidget {
                             piece: piece,
                             totalPieces: provider.pieces.length,
                             imageSource: pieceImageSource,
+                            geometry: PuzzlePieceGeometry.forTray(piece: piece),
                           ),
                         ),
                       );
@@ -721,11 +807,13 @@ class _LargeControl extends StatelessWidget {
     super.key,
     required this.label,
     required this.icon,
+    required this.variant,
     required this.onPressed,
   });
 
   final String label;
   final IconData icon;
+  final PkButtonVariant variant;
   final VoidCallback onPressed;
 
   @override
@@ -733,7 +821,13 @@ class _LargeControl extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
-      child: PkButton(label: label, icon: icon, onPressed: onPressed),
+      child: PkButton(
+        label: label,
+        icon: icon,
+        variant: variant,
+        semanticLabel: label,
+        onPressed: onPressed,
+      ),
     );
   }
 }
@@ -767,6 +861,7 @@ class _UnavailableGame extends StatelessWidget {
               key: const Key('puzzle-back-button'),
               label: 'Volver',
               icon: Icons.arrow_back_rounded,
+              variant: PkButtonVariant.ghost,
               onPressed: onBack,
             ),
           ],
